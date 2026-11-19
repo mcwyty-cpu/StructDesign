@@ -12,10 +12,10 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 20 }
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: 17 }
       - name: Prepare web files
         run: bash native/prepare-www.sh
@@ -30,9 +30,9 @@ jobs:
           R=android/app/src/main/res
           rm -rf $R/mipmap-anydpi-v26
           for d in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
-            n=${d%%:*}; s=${d##*:}
+            n=${d%%:*}
             for f in ic_launcher ic_launcher_round ic_launcher_foreground; do
-              convert icon-512.png -resize ${s}x${s} $R/mipmap-$n/$f.png
+              cp native/android-icons/$n.png $R/mipmap-$n/$f.png
             done
           done
       - name: Build APK
@@ -48,8 +48,8 @@ jobs:
     defaults:
       run: { shell: bash }
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 20 }
       - name: Prepare web files
         run: |
