@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StructDesign – RC slabs, beams & columns</title>
+<meta name="theme-color" content="#1f4e78">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--b:#1f4e78;--b2:#2e75b6;--bg:#eef2f6;--ok:#0a7a2f;--ck:#b36b00;--bad:#b00020}
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:#1b1b1b;font-size:15px}
+header{background:var(--b);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px} header .sub{font-size:12px;opacity:.85}
+header .sp{flex:1} header button{background:#fff2;color:#fff;border:1px solid #fff6}
+nav{display:flex;background:#fff;border-bottom:1px solid #d4dbe3;position:sticky;top:0;z-index:5;overflow-x:auto}
+.tab{flex:1;min-width:84px;border:0;background:none;padding:12px 6px;font-size:14px;color:#555;border-bottom:3px solid transparent;cursor:pointer}
+.tab.on{color:var(--b);border-bottom-color:var(--b);font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px #0001}
+.card h2{font-size:16px;margin:0 0 6px;color:var(--b)} .card p{margin:4px 0 8px;color:#444;font-size:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap} .row>.card{flex:1;min-width:280px}
+.drop{border:2px dashed #9fb3c8;border-radius:10px;padding:14px;text-align:center;background:#f7fafc;cursor:pointer}
+.drop.act{border-color:var(--b2);background:#eef6ff} .drop.over{background:#dceeff}
+.drop .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+button,.btn{background:var(--b2);color:#fff;border:0;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;display:inline-block}
+button:disabled{opacity:.5} button.sec,.btn.sec{background:#e4ebf2;color:#1b1b1b} label.btn input{display:none}
+.pv{position:relative;margin-top:8px} .pvc{max-width:100%;border:1px solid #ccd;touch-action:none;cursor:crosshair}
+.sel{position:absolute;border:2px solid #e67e22;background:#e67e2222;display:none;pointer-events:none}
+.st{font-size:12px;color:#555;margin-top:4px}
+input,select{font-size:14px;padding:7px 8px;border:1px solid #c5ced8;border-radius:6px;width:100%;background:#fff}
+label{display:block;font-size:12px;color:#555;margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 12px}
+.ok{color:var(--ok)} #aiStatus{margin-top:8px;font-size:14px}
+#aiNotes{white-space:pre-wrap;font-size:12px;color:#555;margin-top:6px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.tool{background:#e4ebf2;color:#1b1b1b} .tool.on{background:var(--b);color:#fff}
+#edwrap{overflow:auto;background:#fff;border:1px solid #d4dbe3;border-radius:8px;max-height:72vh;touch-action:pan-x pan-y pinch-zoom}
+#edwrap svg{display:block;min-width:100%;height:auto}
+.legend{font-size:12px;color:#444;display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.legend i{display:inline-block;width:18px;height:10px;margin-right:4px;vertical-align:middle;border-radius:2px}
+table{border-collapse:collapse;width:100%;font-size:13px} th,td{border-bottom:1px solid #e3e7ec;padding:5px 6px;text-align:left;vertical-align:top}
+th{background:#f2f5f9;font-weight:600;white-space:nowrap} tr.first td{border-top:1.5px solid #c7d0da}
+.tw{overflow-x:auto;background:#fff;border-radius:8px;margin-bottom:10px}
+#lvlTable td input,#lvlTable td select{min-width:70px;padding:5px}
+.b{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;color:#fff}
+.b.OK{background:var(--ok)} .b.CHECK{background:var(--ck)} .b.REVISE{background:var(--bad)}
+.sum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px} .sum div{background:#fff;padding:8px 12px;border-radius:8px;font-size:14px}
+.sum .ok{color:var(--ok);font-weight:700} .sum .ck{color:var(--ck);font-weight:700} .sum .bad{color:var(--bad);font-weight:700}
+.warn{background:#fff7e6;border:1px solid #f0c36d;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:13px}
+h3{font-size:15px;margin:16px 0 6px;color:var(--b)}
+.sheet{background:#fff;border-radius:8px;margin-bottom:14px;box-shadow:0 1px 3px #0002;overflow:hidden}
+.sheet .sh{padding:8px 12px;border-bottom:1px solid #e3e7ec;display:flex;gap:8px;align-items:center} .sheet .sh button{margin-left:auto;padding:4px 10px;font-size:12px}
+.sheet svg{display:block;width:100%;height:auto}
+.small{font-size:12px;color:#555}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw}
+#toast.show{opacity:.95} #toast.bad{background:var(--bad)}
+details summary{cursor:pointer;font-weight:600}
+table.calc{background:#fff;font-size:13px} table.calc td.ref{color:#666;width:90px;font-size:12px} table.calc td.out{width:230px;font-weight:600} table.calc th.ref{width:90px} table.calc th.out{width:230px}
+table.calc tr.ch td{background:#1f4e78;color:#fff;font-weight:700} table.calc tr.cs td{background:#eef3f8;font-weight:600}
+td.good{color:var(--ok)} td.bad{color:var(--bad)}
+@media(max-width:600px){main{padding:8px}.card{padding:11px}header h1{font-size:16px}}
+</style></head><body>
+<header><div><h1>StructDesign</h1><div class="sub">RC slabs · beams · columns from a floor plan — EC2 / BS 8110</div></div><span class="sp"></span>
+<button id="installBtn" hidden>Install app</button><button id="newBtn">New project</button></header>
+<nav><button class="tab" data-t="drawing">1 Drawing</button><button class="tab" data-t="layout">2 Layout</button><button class="tab" data-t="loads">3 Loads &amp; code</button><button class="tab" data-t="results">4 Design</button><button class="tab" data-t="calcs">5 Calcs</button><button class="tab" data-t="model">6 3D</button><button class="tab" data-t="drawings">7 Drawings</button></nav>
+<main>
+<section class="pane" id="p-drawing">
+  <div class="row">
+    <div class="card"><h2>Floor plan to design</h2><p>The plan of the floor <b>above</b> the slab — its walls become beams. Paste (Ctrl+V), drop, or choose an image or PDF.</p>
+      <div class="drop act" data-slot="plan">Tap here, then paste — or
+        <div class="btns"><button class="pasteBtn sec" data-slot="plan">Paste</button><label class="btn">Choose file<input class="pick" data-slot="plan" type="file" accept="image/*,.pdf,application/pdf"></label>
+        <label style="width:90px;margin:0">PDF page<input id="pg-plan" type="number" min="1" value="1"></label></div></div>
+      <div class="pv" id="pv-plan"></div><div class="st" id="st-plan"></div></div>
+    <div class="card"><h2>Floor below <small>(optional)</small></h2><p>Lets the app put columns only where there are walls below, so they don't land in rooms.</p>
+      <div class="drop" data-slot="below">Tap here, then paste — or
+        <div class="btns"><button class="pasteBtn sec" data-slot="below">Paste</button><label class="btn">Choose file<input class="pick" data-slot="below" type="file" accept="image/*,.pdf,application/pdf"></label>
+        <label style="width:90px;margin:0">PDF page<input id="pg-below" type="number" min="1" value="1"></label></div></div>
+      <div class="pv" id="pv-below"></div><div class="st" id="st-below"></div></div>
+  </div>
+  <div class="card"><h2>Read the drawings with AI</h2><p>Finds the walls, grid, stairs and balconies, then proposes columns and beams. You check and correct them on the next tab.</p>
+    <div id="aiSource" class="small"></div>
+    <div id="keyBox" class="grid2" style="margin-top:6px"><label>Anthropic API key<input id="apikey" type="password" placeholder="sk-ant-…" autocomplete="off"></label>
+      <label>Model<select id="model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recommended)</option><option value="claude-opus-5-5">Claude Opus 5.5 (most accurate)</option></select></label></div>
+    <button id="readBtn">Read drawings</button><div id="aiStatus"></div><div id="aiNotes"></div></div>
+  <div class="card"><h2>No drawing to hand?</h2>
+    <div class="toolbar"><button id="demoBtn" class="sec">Load demo project</button></div>
+    <div class="grid2"><label>Grid X positions (mm)<input id="blankX" value="0, 4000, 8000, 12000"></label><label>Grid Y positions (mm)<input id="blankY" value="0, 4500, 9000"></label></div>
+    <button id="blankBtn" class="sec">Start from a blank grid</button></div>
+</section>
+
+<section class="pane" id="p-layout" hidden>
+  <div class="card"><div class="toolbar">
+    <b style="margin-right:4px">Tap to edit:</b>
+    <button class="tool on" data-tool="col">■ Columns</button><button class="tool" data-tool="beam">━ Beams</button><button class="tool" data-tool="wall">▬ Wall on beam</button><button class="tool" data-tool="cell">▦ Slab / void / balcony</button>
+    <span style="flex:1"></span><button id="autoCols" class="sec">Re-propose columns</button><button id="zout" class="sec">−</button><button id="zin" class="sec">+</button></div>
+    <div id="edwrap"></div>
+    <div class="legend"><span><i style="background:#1f4e78"></i>beam carrying a wall</span><span><i style="background:#4a90d9"></i>beam, no wall</span><span><i style="background:#111"></i>column</span>
+      <span><i style="background:rgba(120,170,230,.35)"></i>slab</span><span><i style="background:rgba(140,120,230,.45)"></i>balcony (cantilever)</span><span><i style="background:#eee"></i>void / outside</span><span><i style="background:#e67e22"></i>walls on floor below</span></div>
+    <div class="toolbar" style="margin-top:8px"><label style="width:auto;margin:0"><input type="checkbox" id="showImg" checked style="width:auto"> drawing behind</label>
+      <label style="width:160px;margin:0">opacity<input type="range" id="op" min="0" max="1" step="0.05"></label>
+      <label style="width:auto;margin:0"><input type="checkbox" id="showBelow" checked style="width:auto"> walls below</label><span class="small" id="edInfo"></span></div></div>
+  <div class="card"><h2>Grid lines</h2><p>Edit positions (mm, from the top-left wall centreline). Columns, beams and slab types follow the nearest line.</p>
+    <div class="grid2"><label>X (left → right)<input id="gxIn"></label><label>Y (top → bottom)<input id="gyIn"></label></div><button id="applyGrid" class="sec">Apply grid</button></div>
+  <div class="card small">Check every column against doors and windows on <b>all</b> floors. Beams follow walls; a beam with no wall still carries slab load. Balcony cells supported on one side are designed as cantilevers.</div>
+</section>
+
+<section class="pane" id="p-loads" hidden>
+  <div class="card"><h2>Project</h2><div class="grid2" id="infoForm"></div></div>
+  <div class="card"><h2>Design code &amp; materials</h2><label style="max-width:320px">Code<select id="codeSel"><option value="EC2">Eurocode 2 (BS EN 1992-1-1)</option><option value="BS">BS 8110-1:1997</option></select></label><div class="grid2" id="matForm"></div></div>
+  <div class="card"><h2>Levels (bottom to top)</h2><p>Each suspended level uses the layout from tab 2. h = slab (mm); finishes, partitions and qk in kN/m²; external / internal wall loads on beams in kN/m (roof: parapet); storey height in m.</p>
+    <div class="tw"><table id="lvlTable"><tr><th>Name</th><th>Kind</th><th>h</th><th>Finishes</th><th>Partitions</th><th>qk</th><th>Ext. wall</th><th>Int. wall</th><th>Storey H</th><th></th></tr><tbody id="lvlBody"></tbody></table></div>
+    <button id="addLvl" class="sec">Add floor</button></div>
+</section>
+
+<section class="pane" id="p-results" hidden>
+  <div class="toolbar"><button id="csvBtn" class="sec">Download schedule (CSV)</button></div>
+  <div id="results"></div>
+</section>
+
+<section class="pane" id="p-calcs" hidden>
+  <div class="card"><div class="toolbar"><select id="calcSel" style="max-width:420px"></select><button id="calcPdfBtn">Calculations PDF (A4)</button><button id="xlsBtn" class="sec">Excel workbook (.xlsx)</button></div>
+    <p class="small">Step-by-step workings for every member: Ref. (code clause) · Calculation · Output. The Excel workbook repeats the section design with live formulas — change a blue input and the checks update.</p></div>
+  <div id="calcView" class="tw"></div>
+</section>
+
+<section class="pane" id="p-model" hidden>
+  <div class="card"><div class="toolbar">
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-slabs" checked style="width:auto"> slabs</label>
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-beams" checked style="width:auto"> beams</label>
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-cols" checked style="width:auto"> columns</label>
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-rebar" style="width:auto"> reinforcement</label>
+    <span style="flex:1"></span><button class="sec" data-v="iso">3D</button><button class="sec" data-v="front">Front</button><button class="sec" data-v="side">Side</button><button class="sec" data-v="top">Plan</button><button id="pngBtn" class="sec">Save image</button></div>
+    <div id="view3d" style="width:100%;border-radius:8px;overflow:hidden;background:#f4f7fb"></div>
+    <p class="small">Drag to rotate · pinch or scroll to zoom · Shift+drag (or right-drag) to pan. Reinforcement view shows bottom bars (red), top bars (blue), links (grey) and column bars.</p></div>
+</section>
+
+<section class="pane" id="p-drawings" hidden>
+  <div class="card"><div class="toolbar"><button id="pdfBtn">Drawings PDF (A3)</button><button id="pkgBtn" class="sec">Full package PDF (drawings + calcs)</button><button id="saveBtn" class="sec">Save project</button>
+    <label class="btn sec">Open project<input id="openBtn" type="file" accept=".json,application/json"></label></div>
+    <p class="small">A3 sheets: framing &amp; slab reinforcement plans, building sections, beam reinforcement elevations with cross-sections, slab sections, 3D view, beam / slab / column schedules, typical details and notes.</p></div>
+  <div id="sheets"></div>
+</section>
+</main>
+<div id="toast"></div>
+<script>
+/* ===================================================================
+   StructDesign engine — RC slabs, beams, columns to EC2 or BS 8110
+   Grid model: gx[], gy[] (mm); cols{"i,j":1}; beams{"h,i,j":{wall}} (segment (i,j)->(i+1,j)),
+   {"v,i,j":{wall}} ((i,j)->(i,j+1)); cells{"i,j": slab|void|balcony|none}
+   =================================================================== */
+const SD = (() => {
+  const A = d => Math.PI * d * d / 4;
+  const r25 = x => Math.floor(x / 25) * 25;
+  const key = (...a) => a.join(",");
+
+  // ---------------------------------------------------------- code parameters
+  function codeP(P) {
+    const m = P.mat, ec = P.code === "EC2";
+    return ec ? { ec, gG: 1.35, gQ: 1.5, gGmin: 1.35, fck: m.fck, fyk: m.fyk, fcd: 0.85 * m.fck / 1.5,
+                  fyd: m.fyk / 1.15, Kp: 0.167, fctm: 0.3 * Math.pow(m.fck, 2 / 3), name: "EC2" }
+              : { ec, gG: 1.4, gQ: 1.6, gGmin: 1.0, fcu: m.fcu, fy: m.fy, fcd: 0.45 * m.fcu, fyd: 0.87 * m.fy,
+                  Kp: 0.156, name: "BS 8110" };
+  }
+
+  // ---------------------------------------------------------- section design
+  function flex(C, M, b, d, d2 = 50) {
+    if (M <= 0) return { As: 0, As2: 0, K: 0, z: 0.95 * d };
+    if (C.ec) {
+      const K = M * 1e6 / (b * d * d * C.fck);
+      if (K <= C.Kp) { const z = Math.min(0.95 * d, d / 2 * (1 + Math.sqrt(1 - 3.53 * K))); return { As: M * 1e6 / (C.fyd * z), As2: 0, K, z }; }
+      const z = d / 2 * (1 + Math.sqrt(1 - 3.53 * C.Kp));
+      const As2 = (K - C.Kp) * C.fck * b * d * d / (C.fyd * (d - d2));
+      return { As: C.Kp * C.fck * b * d * d / (C.fyd * z) + As2, As2, K, z };
+    }
+    const K = M * 1e6 / (b * d * d * C.fcu);
+    if (K <= C.Kp) { const z = Math.min(0.95 * d, d * (0.5 + Math.sqrt(0.25 - K / 0.9))); return { As: M * 1e6 / (C.fyd * z), As2: 0, K, z }; }
+    const z = d * (0.5 + Math.sqrt(0.25 - C.Kp / 0.9));
+    const As2 = (K - C.Kp) * C.fcu * b * d * d / (C.fyd * (d - d2));
+    return { As: C.Kp * C.fcu * b * d * d / (C.fyd * z) + As2, As2, K, z };
+  }
+  // flanged sagging design (returns As)
+  function flexT(C, M, bw, bf, d, hf) {
+    if (M <= 0) return { As: 0, As2: 0, K: 0, inFlange: true };
+    const Mf = (C.ec ? 0.567 * C.fck : 0.45 * C.fcu) * bf * hf * (d - hf / 2) / 1e6;
+    if (M <= Mf) return Object.assign(flex(C, M, bf, d), { inFlange: true, Mf });
+    const As = C.ec ? (M * 1e6 + 0.1 * C.fck * bw * d * (0.36 * d - hf)) / (C.fyd * (d - 0.5 * hf))
+                    : (M * 1e6 + 0.1 * C.fcu * bw * d * (0.45 * d - hf)) / (C.fyd * (d - 0.5 * hf));
+    const Kw = M * 1e6 / (bw * d * d * (C.ec ? C.fck : C.fcu));
+    return { As, As2: 0, K: Kw * 0.5, inFlange: false, Mf };
+  }
+  function asMin(C, b, d, h) {
+    return C.ec ? Math.max(0.26 * C.fctm / C.fyk * b * d, 0.0013 * b * d) : 0.0013 * b * h;
+  }
+  // allowable span/depth
+  function ldEC(C, rho, K, rhoC = 0) {
+    const f = Math.sqrt(C.fck), r0 = f / 1000; rho = Math.max(rho, 1e-6);
+    const v = rho <= r0 ? 11 + 1.5 * f * r0 / rho + 3.2 * f * Math.pow(r0 / rho - 1, 1.5)
+                        : 11 + 1.5 * f * r0 / Math.max(rho - rhoC, 1e-6) + f / 12 * Math.sqrt(rhoC / r0);
+    return K * v;
+  }
+  function ldAllow(C, kind, As_req, As_prov, M, b, d, L, flangeRatio = 1) {
+    // kind: 'ss' | 'end' | 'int' | 'cant'
+    if (C.ec) {
+      const K = { ss: 1.0, end: 1.3, int: 1.5, cant: 0.4 }[kind] * (flangeRatio > 3 ? 0.8 : 1);
+      let v = ldEC(C, Math.max(As_req, 1) / (b * d), K) * Math.min(1.5, 500 / C.fyk * As_prov / Math.max(As_req, 1));
+      if (L > 7 && kind !== "cant") v *= 7 / L;
+      return v;
+    }
+    let basic = { ss: 20, end: 26, int: 26, cant: 7 }[kind];
+    if (flangeRatio > 1) { const r = Math.max(0.3, 1 / flangeRatio); basic *= 0.8 + 0.2 * (r - 0.3) / 0.7; }
+    const fs = 2 / 3 * C.fy * As_req / Math.max(As_prov, 1);
+    const mf = Math.min(2, 0.55 + (477 - fs) / (120 * (0.9 + M * 1e6 / (b * d * d))));
+    let v = basic * Math.max(mf, 0.3);
+    if (L > 10 && kind !== "cant") v *= 10 / L;
+    return v;
+  }
+  function vcConc(C, b, d, As) {
+    if (C.ec) {
+      const k = Math.min(2, 1 + Math.sqrt(200 / d)), rho = Math.min(0.02, As / (b * d));
+      return Math.max(0.12 * k * Math.pow(100 * rho * C.fck, 1 / 3), 0.035 * Math.pow(k, 1.5) * Math.sqrt(C.fck)) * b * d / 1000; // kN
+    }
+    const vc = 0.79 * Math.pow(Math.min(3, 100 * As / (b * d)), 1 / 3) * Math.pow(Math.max(1, 400 / d), 0.25) / 1.25 * Math.pow(Math.min(C.fcu, 40) / 25, 1 / 3);
+    return vc * b * d / 1000; // kN
+  }
+  function linksDesign(C, V, b, d, AsT, link = 8, legs = 2) {
+    const Asw = legs * A(link);
+    if (C.ec) {
+      const z = 0.9 * d, nu1 = 0.6 * (1 - C.fck / 250), fcdv = C.fck / 1.5;
+      const Vm25 = b * z * nu1 * fcdv / 2.9 / 1000, Vm45 = b * z * nu1 * fcdv / 2 / 1000;
+      if (V > Vm45) return { ok: false, s: 0, txt: "section too small for shear" };
+      const th = V <= Vm25 ? Math.atan(1 / 2.5) : 0.5 * Math.asin(Math.min(1, 2 * V * 1000 / (b * z * nu1 * fcdv)));
+      const cot = 1 / Math.tan(th);
+      const req = Math.max(V * 1000 / (z * C.fyd * cot), 0.08 * Math.sqrt(C.fck) * b / C.fyk);
+      const s = Math.max(50, Math.min(r25(Asw / req), r25(0.75 * d), 300));
+      return { ok: true, s, VRc: vcConc(C, b, d, AsT) };
+    }
+    const v = V * 1000 / (b * d), vmax = Math.min(0.8 * Math.sqrt(C.fcu), 5);
+    if (v > vmax) return { ok: false, s: 0, txt: "section too small for shear" };
+    const vc = vcConc(C, b, d, AsT) * 1000 / (b * d);
+    const req = v <= vc + 0.4 ? 0.4 * b / C.fyd : b * (v - vc) / C.fyd;
+    const s = Math.max(50, Math.min(r25(Asw / req), r25(0.75 * d), 300));
+    return { ok: true, s, VRc: vc * b * d / 1000 };
+  }
+  function pickBars(As, b, cover, link, opts = [12, 16, 20, 25, 32]) {
+    let best = null;
+    for (const d of opts) {
+      const n = Math.max(2, Math.ceil(As / A(d) - 1e-9));
+      if (n > 8) continue;
+      const clear = (b - 2 * cover - 2 * link - n * d) / Math.max(n - 1, 1);
+      const layers = clear >= Math.max(d, 25) ? 1 : 2;
+      const cand = { n, d, A: n * A(d), layers };
+      const score = cand.A * (layers === 2 ? 1.25 : 1);
+      if (!best || score < best.score - 1) best = Object.assign(cand, { score });
+    }
+    return best;
+  }
+  function slabBars(As, smax) {
+    for (const d of [10, 12, 16]) {
+      const s = Math.min(r25(A(d) * 1000 / As), smax);
+      if (s >= 150 || (d === 16 && s >= 100)) return { d, s, A: A(d) * 1000 / s };
+    }
+    return { d: 16, s: 100, A: A(16) * 10, fail: true };
+  }
+  const bt = b => b ? `${b.n}H${b.d}` : "–";
+  const st = b => b ? `H${b.d}@${b.s}` : "–";
+
+  // ---------------------------------------------------------- BS 8110 Table 3.14
+  const RAT = [1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0];
+  const T314 = {
+    neg: [[.031, .037, .042, .046, .050, .053, .059, .063], [.039, .044, .048, .052, .055, .058, .063, .067], [.039, .049, .056, .062, .068, .073, .082, .089],
+          [.047, .056, .063, .069, .074, .078, .087, .093], [.046, .050, .054, .057, .060, .062, .067, .070], [0, 0, 0, 0, 0, 0, 0, 0],
+          [.057, .065, .071, .076, .081, .084, .092, .098], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]],
+    pos: [[.024, .028, .032, .035, .037, .040, .044, .048], [.029, .033, .036, .039, .041, .043, .047, .050], [.030, .036, .042, .047, .051, .055, .062, .067],
+          [.036, .042, .047, .051, .055, .059, .065, .070], [.034, .038, .040, .043, .045, .047, .050, .053], [.034, .046, .056, .065, .072, .078, .091, .100],
+          [.043, .048, .053, .057, .060, .063, .069, .074], [.042, .054, .063, .071, .078, .084, .096, .105], [.055, .065, .074, .081, .087, .092, .103, .111]],
+    negL: [.032, .037, .037, .045, 0, .045, 0, .058, 0], posL: [.024, .028, .028, .034, .034, .034, .044, .044, .056],
+    names: ["interior panel", "one short edge discontinuous", "one long edge discontinuous", "two adjacent edges discontinuous",
+            "two short edges discontinuous", "two long edges discontinuous", "three edges discontinuous (one long continuous)",
+            "three edges discontinuous (one short continuous)", "four edges discontinuous"]
+  };
+  function interp(r, arr) {
+    r = Math.min(Math.max(r, 1), 2);
+    for (let i = 0; i < 7; i++) if (r <= RAT[i + 1]) return arr[i] + (r - RAT[i]) / (RAT[i + 1] - RAT[i]) * (arr[i + 1] - arr[i]);
+    return arr[7];
+  }
+  function slabCase(ns, nl) {
+    const t = { "0,0": 1, "1,0": 2, "0,1": 3, "1,1": 4, "2,0": 5, "0,2": 6, "2,1": 7, "1,2": 8, "2,2": 9 };
+    return t[ns + "," + nl];
+  }
+
+  // ---------------------------------------------------------- geometry helpers
+  function nx(P) { return P.gx.length - 1; }
+  function ny(P) { return P.gy.length - 1; }
+  const cellT = (P, i, j) => (i < 0 || j < 0 || i >= nx(P) || j >= ny(P)) ? "none" : (P.cells[key(i, j)] || "slab");
+  const hasB = (P, k) => !!P.beams[k];
+
+  // ---------------------------------------------------------- panels
+  function panels(P) {
+    const NX = nx(P), NY = ny(P);
+    const par = {};
+    const find = a => { while (par[a] !== a) { par[a] = par[par[a]]; a = par[a]; } return a; };
+    const uni = (a, b) => { a = find(a); b = find(b); if (a !== b) par[b] = a; };
+    for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) par[key(i, j)] = key(i, j);
+    for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) {
+      const t = cellT(P, i, j); if (t !== "slab" && t !== "balcony") continue;
+      if (i + 1 < NX && cellT(P, i + 1, j) === t && !hasB(P, key("v", i + 1, j))) uni(key(i, j), key(i + 1, j));
+      if (j + 1 < NY && cellT(P, i, j + 1) === t && !hasB(P, key("h", i, j + 1))) uni(key(i, j), key(i, j + 1));
+    }
+    const groups = {};
+    for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) {
+      const t = cellT(P, i, j); if (t !== "slab" && t !== "balcony") continue;
+      const r = find(key(i, j)); (groups[r] = groups[r] || { type: t, cells: [] }).cells.push([i, j]);
+    }
+    const out = [];
+    for (const g of Object.values(groups)) {
+      const is = g.cells.map(c => c[0]), js = g.cells.map(c => c[1]);
+      const i0 = Math.min(...is), i1 = Math.max(...is), j0 = Math.min(...js), j1 = Math.max(...js);
+      const p = { type: g.type, cells: g.cells, i0, i1, j0, j1, x0: P.gx[i0], x1: P.gx[i1 + 1], y0: P.gy[j0], y1: P.gy[j1 + 1],
+                  irregular: g.cells.length !== (i1 - i0 + 1) * (j1 - j0 + 1), warn: [] };
+      p.Lx = (p.x1 - p.x0) / 1000; p.Ly = (p.y1 - p.y0) / 1000;
+      // sides: top (y0), bottom (y1), left (x0), right (x1)
+      const side = (s) => {
+        const segs = []; let cont = 0, n = 0;
+        if (s === "top" || s === "bottom") {
+          const j = s === "top" ? j0 : j1 + 1, jn = s === "top" ? j0 - 1 : j1 + 1;
+          for (let i = i0; i <= i1; i++) { segs.push(key("h", i, j)); n++; if (cellT(P, i, jn) === "slab") cont++; }
+        } else {
+          const i = s === "left" ? i0 : i1 + 1, inb = s === "left" ? i0 - 1 : i1 + 1;
+          for (let j = j0; j <= j1; j++) { segs.push(key("v", i, j)); n++; if (cellT(P, inb, j) === "slab") cont++; }
+        }
+        const sup = segs.filter(k => hasB(P, k)).length;
+        return { segs, cont: cont > n / 2, supported: sup === segs.length, partly: sup > 0 };
+      };
+      p.sides = { top: side("top"), bottom: side("bottom"), left: side("left"), right: side("right") };
+      out.push(p);
+    }
+    out.sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
+    return out;
+  }
+
+  function classifyPanel(p) {
+    const S = p.sides;
+    if (p.type === "balcony") {
+      const sup = Object.entries(S).filter(([k, v]) => v.supported).map(([k]) => k);
+      if (sup.length === 1) {
+        const s = sup[0];
+        p.kind = "cant"; p.supSide = s;
+        p.Lc = (s === "top" || s === "bottom") ? p.Ly : p.Lx;
+        p.Wd = (s === "top" || s === "bottom") ? p.Lx : p.Ly;
+        p.cls = `Cantilever slab (projection ${p.Lc.toFixed(2)} m)`;
+        return p;
+      }
+      if (sup.length === 0) { p.kind = "none"; p.cls = "Unsupported – add a beam"; p.warn.push("balcony has no supporting beam"); return p; }
+    }
+    for (const [k, v] of Object.entries(S)) if (!v.supported) p.warn.push(`${k} edge ${v.partly ? "partly " : ""}unsupported – add beam`);
+    p.lx = Math.min(p.Lx, p.Ly); p.ly = Math.max(p.Lx, p.Ly);
+    p.shortAlongX = p.Lx <= p.Ly;
+    // long edges are parallel to the long span: if short span along x, long edges are left/right
+    const longE = p.shortAlongX ? ["left", "right"] : ["top", "bottom"];
+    const shortE = p.shortAlongX ? ["top", "bottom"] : ["left", "right"];
+    p.longE = longE; p.shortE = shortE;
+    p.nl = longE.filter(e => !S[e].cont).length;
+    p.ns = shortE.filter(e => !S[e].cont).length;
+    p.ratio = p.ly / p.lx;
+    if (p.ratio > 2) {
+      p.kind = "one";
+      p.pos1 = p.nl === 2 ? 1 : (p.nl === 1 ? 2 : 3);
+      p.cls = p.pos1 === 1 ? "One-way, simply supported" : `One-way, continuous (${p.pos1 === 2 ? "end" : "interior"} span)`;
+    } else {
+      p.kind = "two";
+      p.case = slabCase(p.ns, p.nl);
+      p.simple = p.case === 9;
+      p.cls = p.simple ? "Two-way, simply supported" : `Two-way, restrained – case ${p.case}: ${T314.names[p.case - 1]}`;
+    }
+    p.simpleFlag = (p.kind === "one" && p.pos1 === 1) || (p.kind === "two" && p.simple);
+    p.contTxt = p.simpleFlag ? "Simple" : "Continuous";
+    return p;
+  }
+
+  function designPanel(P, C, p, lvl) {
+    classifyPanel(p);
+    if (p.kind === "none") { p.status = "REVISE"; return p; }
+    const cover = lvl.kind === "roof" ? Math.max(P.mat.cs, 30) : (p.kind === "cant" ? Math.max(P.mat.cs, 35) : P.mat.cs);
+    const qk = p.kind === "cant" ? Math.max(lvl.qk, 2.5) : lvl.qk;
+    for (let h = lvl.h; h <= 300; h += 25) {
+      const gk = h / 1000 * 25 + lvl.fin + (p.kind === "cant" ? 0 : lvl.part);
+      const n = C.gG * gk + C.gQ * qk;
+      const d1 = h - cover - 5, d2 = d1 - 10;
+      const r = { h, gk, qk, n, d1, d2 };
+      let M = {};
+      if (p.kind === "cant") {
+        const L = p.Lc;
+        M.sxn = n * L * L / 2 + C.gG * P.balu * L + C.gQ * 0.74 * 1.1; M.sxp = 0; M.syp = 0; M.syn = 0;
+      } else if (p.kind === "one") {
+        const cp = [0.125, 0.086, 0.063][p.pos1 - 1], cn = [0, 0.086, 0.063][p.pos1 - 1];
+        M = { sxp: cp * n * p.lx ** 2, sxn: cn * n * p.lx ** 2, syp: 0, syn: 0 };
+      } else if (p.simple) {
+        const rr = Math.min(p.ratio, 2), a4 = rr ** 4;
+        M = { sxp: a4 / (8 * (1 + a4)) * n * p.lx ** 2, sxn: 0, syp: rr * rr / (8 * (1 + a4)) * n * p.lx ** 2, syn: 0 };
+      } else {
+        const c = p.case - 1;
+        M = { sxp: interp(p.ratio, T314.pos[c]) * n * p.lx ** 2, sxn: interp(p.ratio, T314.neg[c]) * n * p.lx ** 2,
+              syp: T314.posL[c] * n * p.lx ** 2, syn: T314.negL[c] * n * p.lx ** 2 };
+      }
+      r.M = M;
+      const sl = P.slabMaxS || 250;
+      const smaxP = Math.min(C.ec ? Math.min(2 * h, 250) : Math.min(3 * d1, 300), sl), smaxS = Math.min(C.ec ? Math.min(3 * h, 300) : Math.min(3 * d1, 300), sl);
+      const row = (Mv, d, main, need) => {
+        const f = flex(C, Mv, 1000, d);
+        const Amin = asMin(C, 1000, d, h);
+        const Ad = need ? Math.max(f.As, Amin) : (Mv > 0 ? Math.max(f.As, Amin) : 0);
+        return { M: Mv, d, As: f.As, K: f.K, Ad, bars: Ad > 0 ? slabBars(Ad, main ? smaxP : smaxS) : null };
+      };
+      if (p.kind === "cant") {
+        r.rows = { sxp: row(0, d1, true, true), sxn: row(M.sxn, d1, true, true), syp: row(0, d2, false, true), syn: null };
+        const dist = Math.max(asMin(C, 1000, d2, h), 0.2 * r.rows.sxn.Ad);
+        r.rows.syn = { M: 0, d: d2, As: 0, Ad: dist, bars: slabBars(dist, smaxS) };
+      } else {
+        r.rows = { sxp: row(M.sxp, d1, true, true), sxn: row(M.sxn, d1, true, false), syp: row(M.syp, d2, false, true), syn: row(M.syn, d2, false, false) };
+        if (p.kind === "one") { const dist = Math.max(asMin(C, 1000, d2, h), 0.2 * r.rows.sxp.Ad); r.rows.syp.Ad = dist; r.rows.syp.bars = slabBars(dist, smaxS); }
+      }
+      const main = p.kind === "cant" ? r.rows.sxn : r.rows.sxp;
+      const kd = p.kind === "cant" ? "cant" : (p.simpleFlag || p.nl === 2 ? "ss" : (p.nl === 1 ? "end" : "int"));
+      const L = p.kind === "cant" ? p.Lc : p.lx;
+      r.ldAllow = ldAllow(C, kd, Math.max(main.As, 1), main.bars.A, main.M, 1000, d1, L);
+      r.ldAct = L * 1000 / d1;
+      r.V = p.kind === "cant" ? n * L + C.gG * P.balu : (p.kind === "one" ? [0.5, 0.6, 0.5][p.pos1 - 1] : (p.simpleFlag ? 0.5 : 0.575)) * n * L;
+      r.VRc = vcConc(C, 1000, d1, main.bars.A);
+      r.ok = r.ldAct <= r.ldAllow && r.V <= r.VRc && Object.values(r.rows).every(x => !x || ((!x.bars || !x.bars.fail) && x.K <= C.Kp + 1e-9 || !x.K));
+      Object.assign(p, { d: r });
+      if (r.ok) break;
+    }
+    p.status = p.d.ok ? (p.warn.length ? "CHECK" : "OK") : "REVISE";
+    if (p.d.h > lvl.h) p.note = `thickened to ${p.d.h} mm for ${p.d.ldAct > p.d.ldAllow ? "deflection" : "strength/deflection"}`;
+    return p;
+  }
+
+  // tributary widths on each side of a panel (m)
+  function panelTrib(p) {
+    const t = { top: 0, bottom: 0, left: 0, right: 0 };
+    if (p.kind === "cant") { t[p.supSide] = p.Lc; return t; }
+    if (p.kind === "none") return t;
+    for (const e of p.longE) t[e] = p.lx / 2;
+    for (const e of p.shortE) t[e] = p.kind === "one" ? 0 : p.lx / 3;
+    return t;
+  }
+
+  // ---------------------------------------------------------- beam runs
+  function runs(P) {
+    const out = [];
+    const NX = nx(P), NY = ny(P);
+    for (let j = 0; j <= NY; j++) {
+      let i = 0;
+      while (i < NX) {
+        if (hasB(P, key("h", i, j))) { const s = i; while (i < NX && hasB(P, key("h", i, j))) i++; out.push({ dir: "h", line: j, a: s, b: i }); }
+        else i++;
+      }
+    }
+    for (let i = 0; i <= NX; i++) {
+      let j = 0;
+      while (j < NY) {
+        if (hasB(P, key("v", i, j))) { const s = j; while (j < NY && hasB(P, key("v", i, j))) j++; out.push({ dir: "v", line: i, a: s, b: j }); }
+        else j++;
+      }
+    }
+    out.forEach((r, k) => r.id = k);
+    return out;
+  }
+  const nodeOf = (r, k) => r.dir === "h" ? [k, r.line] : [r.line, k];
+  const posOf = (P, r, k) => r.dir === "h" ? P.gx[k] : P.gy[k];
+  function runAt(R, dir, i, j) { // run containing segment
+    return R.find(r => r.dir === dir && (dir === "h" ? (r.line === j && i >= r.a && i < r.b) : (r.line === i && j >= r.a && j < r.b)));
+  }
+
+  function setupRun(P, R, r) {
+    r.sup = []; r.warn = [];
+    for (let k = r.a; k <= r.b; k++) {
+      const [i, j] = nodeOf(r, k);
+      if (P.cols[key(i, j)]) { r.sup.push({ k, type: "col", node: key(i, j) }); continue; }
+      if (k === r.a || k === r.b) {
+        // perpendicular beam through/ending at node?
+        let pr = null;
+        if (r.dir === "h") pr = runAt(R, "v", i, j - 1) || runAt(R, "v", i, j);
+        else pr = runAt(R, "h", i - 1, j) || runAt(R, "h", i, j);
+        if (pr) r.sup.push({ k, type: "beam", run: pr.id, node: key(i, j) });
+      }
+    }
+    if (r.sup.length === 0) r.warn.push("no supports – add a column");
+    if (r.sup.length === 1 && !(r.sup[0].k === r.a || r.sup[0].k === r.b)) r.warn.push("single support – unstable");
+    // elements: interior spans + overhangs
+    const el = [];
+    const s0 = r.sup.length ? r.sup[0].k : r.a, s1 = r.sup.length ? r.sup[r.sup.length - 1].k : r.b;
+    if (s0 > r.a) el.push({ kind: "cantL", k0: r.a, k1: s0 });
+    for (let t = 0; t + 1 < r.sup.length; t++) el.push({ kind: "span", k0: r.sup[t].k, k1: r.sup[t + 1].k });
+    if (s1 < r.b) el.push({ kind: "cantR", k0: s1, k1: r.b });
+    for (const e of el) { e.L = (posOf(P, r, e.k1) - posOf(P, r, e.k0)) / 1000; e.pts = []; }
+    r.el = el;
+    r.L = (posOf(P, r, r.b) - posOf(P, r, r.a)) / 1000;
+  }
+
+  // loads on each grid segment from panels + walls (per level)
+  function segLoads(P, PN, lvl) {
+    const L = {};
+    const add = (k, g, q) => { const o = L[k] || (L[k] = { g: 0, q: 0, slabs: [] }); o.g += g; o.q += q; };
+    for (const p of PN) {
+      if (!p.d) continue;
+      const t = panelTrib(p);
+      for (const s of ["top", "bottom", "left", "right"]) {
+        if (!t[s]) continue;
+        let g = t[s] * p.d.gk, q = t[s] * p.d.qk;
+        if (p.kind === "cant") g += P.balu;
+        for (const k of p.sides[s].segs) if (P.beams[k]) { add(k, g, q); L[k].slabs.push({ p, side: s }); }
+      }
+    }
+    // walls
+    const NX = nx(P), NY = ny(P);
+    for (const k of Object.keys(P.beams)) {
+      const [d, i, j] = k.split(","); const ii = +i, jj = +j;
+      let ext;
+      if (d === "h") ext = cellT(P, ii, jj - 1) !== "slab" && cellT(P, ii, jj - 1) !== "void" || cellT(P, ii, jj) !== "slab" && cellT(P, ii, jj) !== "void";
+      else ext = cellT(P, ii - 1, jj) !== "slab" && cellT(P, ii - 1, jj) !== "void" || cellT(P, ii, jj) !== "slab" && cellT(P, ii, jj) !== "void";
+      const wall = P.beams[k].wall;
+      let w = 0;
+      if (lvl.kind === "roof") w = ext ? lvl.ext : 0;
+      else if (wall) w = ext ? lvl.ext : lvl.int;
+      add(k, w, 0);
+      L[k].ext = ext;
+    }
+    return L;
+  }
+
+  // ---------------------------------------------------------- continuous beam analysis
+  function gauss(Am, b) {
+    const n = b.length, M = Am.map((r, i) => r.concat([b[i]]));
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+      [M[c], M[p]] = [M[p], M[c]];
+      for (let r = 0; r < n; r++) if (r !== c && M[c][c] !== 0) { const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+    }
+    return M.map((r, i) => r[n] / r[i]);
+  }
+  // load: per element {w, pts:[[a,P]]}. returns per element: {Ml, Mr, res:[{x,M,V}], RA, RB} and support moments
+  function solve(els, loads) {
+    const spans = els.map((e, i) => i).filter(i => els[i].kind === "span");
+    const out = els.map(() => ({}));
+    // overhang moments (hogging magnitudes)
+    const cantM = (i) => { const e = els[i], l = loads[i]; let m = l.w * e.L * e.L / 2; for (const [a, Pp] of l.pts) m += Pp * a; return m; };
+    let McL = 0, McR = 0;
+    els.forEach((e, i) => { if (e.kind === "cantL") McL = cantM(i); if (e.kind === "cantR") McR = cantM(i); });
+    const ns = spans.length;
+    let Ms = new Array(ns + 1).fill(0);
+    if (ns >= 1) {
+      const N = ns + 1, K = Array.from({ length: N }, () => new Array(N).fill(0)), F = new Array(N).fill(0);
+      const fem = spans.map(i => {
+        const e = els[i], l = loads[i], Lm = e.L;
+        let fl = l.w * Lm * Lm / 12, fr = -l.w * Lm * Lm / 12;
+        for (const [a, Pp] of l.pts) { const b = Lm - a; fl += Pp * a * b * b / (Lm * Lm); fr -= Pp * a * a * b / (Lm * Lm); }
+        return [fl, fr];
+      });
+      spans.forEach((si, t) => {
+        const Lm = els[si].L, k4 = 4 / Lm, k2 = 2 / Lm;
+        K[t][t] += k4; K[t][t + 1] += k2; K[t + 1][t] += k2; K[t + 1][t + 1] += k4;
+        F[t] -= fem[t][0]; F[t + 1] -= fem[t][1];
+      });
+      F[0] += McL; F[ns] -= McR;
+      const th = gauss(K, F);
+      spans.forEach((si, t) => {
+        const Lm = els[si].L;
+        const ml = fem[t][0] + (4 * th[t] + 2 * th[t + 1]) / Lm;
+        const mr = fem[t][1] + (2 * th[t] + 4 * th[t + 1]) / Lm;
+        if (t === 0) Ms[0] = -ml;
+        Ms[t + 1] = mr;
+      });
+      // exact ends
+      Ms[0] = McL ? -McL : (ns ? Ms[0] : 0); if (!McL) Ms[0] = 0;
+      Ms[ns] = McR ? -McR : 0;
+    }
+    const Rsup = new Array(ns + 1).fill(0);
+    spans.forEach((si, t) => {
+      const e = els[si], l = loads[si], Lm = e.L, Ml = Ms[t], Mr = Ms[t + 1];
+      const RA = l.w * Lm / 2 + l.pts.reduce((s, [a, Pp]) => s + Pp * (Lm - a) / Lm, 0) + (Mr - Ml) / Lm;
+      const xs = []; for (let k = 0; k <= 30; k++) xs.push(Lm * k / 30); l.pts.forEach(([a]) => xs.push(a));
+      xs.sort((a, b) => a - b);
+      const res = xs.map(x => {
+        const M = Ml + RA * x - l.w * x * x / 2 - l.pts.reduce((s, [a, Pp]) => s + (a < x ? Pp * (x - a) : 0), 0);
+        const V = RA - l.w * x - l.pts.reduce((s, [a, Pp]) => s + (a < x ? Pp : 0), 0);
+        return { x, M, V };
+      });
+      const RB = l.w * Lm + l.pts.reduce((s, [, Pp]) => s + Pp, 0) - RA;
+      out[si] = { Ml, Mr, res, RA, RB };
+      Rsup[t] += RA; Rsup[t + 1] += RB;
+    });
+    els.forEach((e, i) => {
+      if (e.kind === "span") return;
+      const l = loads[i], Vt = l.w * e.L + l.pts.reduce((s, [, Pp]) => s + Pp, 0), Mc = cantM(i);
+      out[i] = { Ml: e.kind === "cantR" ? -Mc : 0, Mr: e.kind === "cantL" ? -Mc : 0, res: [{ x: 0, M: -Mc, V: Vt }], RA: 0, RB: 0, Vt, Mc };
+      if (e.kind === "cantL") Rsup[0] += Vt; else Rsup[ns] += Vt;
+    });
+    return { out, Rsup, Ms };
+  }
+
+  function analyseRun(r, C, sw) {
+    const els = r.el, n = els.length;
+    const gk = els.map(e => e.g + sw), qk = els.map(e => e.q);
+    const run = (gf, qf) => solve(els, els.map((e, i) => ({
+      w: gf[i] * gk[i] + qf[i] * qk[i],
+      pts: e.pts.map(p => [p.a, gf[i] * p.G + qf[i] * p.Q])
+    })));
+    const cases = [[els.map(() => C.gG), els.map(() => C.gQ)]];
+    if (n > 1) {
+      cases.push([els.map((e, i) => i % 2 ? C.gGmin : C.gG), els.map((e, i) => i % 2 ? 0 : C.gQ)]);
+      cases.push([els.map((e, i) => i % 2 ? C.gG : C.gGmin), els.map((e, i) => i % 2 ? C.gQ : 0)]);
+      for (let j = 0; j + 1 < n; j++) cases.push([els.map((e, i) => (i === j || i === j + 1) ? C.gG : C.gGmin), els.map((e, i) => (i === j || i === j + 1) ? C.gQ : 0)]);
+    }
+    const env = els.map(() => ({ Mpos: 0, MnL: 0, MnR: 0, V: 0 }));
+    const nsup = r.sup.length;
+    const Rmax = new Array(Math.max(nsup, 1)).fill(0);
+    for (const [gf, qf] of cases) {
+      const s = run(gf, qf);
+      els.forEach((e, i) => {
+        const o = s.out[i];
+        if (e.kind === "span") {
+          for (const p of o.res) { env[i].Mpos = Math.max(env[i].Mpos, p.M); env[i].V = Math.max(env[i].V, Math.abs(p.V)); }
+          env[i].MnL = Math.max(env[i].MnL, -o.Ml); env[i].MnR = Math.max(env[i].MnR, -o.Mr);
+        } else {
+          env[i].V = Math.max(env[i].V, o.Vt);
+          if (e.kind === "cantL") env[i].MnR = Math.max(env[i].MnR, o.Mc); else env[i].MnL = Math.max(env[i].MnL, o.Mc);
+        }
+      });
+      s.Rsup.forEach((v, j) => Rmax[j] = Math.max(Rmax[j], v));
+    }
+    const RG = run(els.map(() => 1), els.map(() => 0)).Rsup, RQ = run(els.map(() => 0), els.map(() => 1)).Rsup;
+    return { env, Rmax, RG, RQ, gk, qk };
+  }
+
+  const BEAM_SIZES = [[200, 450], [225, 450], [225, 500], [225, 550], [250, 600], [250, 650], [300, 650], [300, 700], [300, 750], [350, 800], [400, 900]];
+
+  function designRun(P, C, r, lvl, PN) {
+    const cover = P.mat.cb, link = 8;
+    // beam type from adjacent cells
+    const sideTypes = () => {
+      let a = 0, b = 0;
+      for (let k = r.a; k < r.b; k++) {
+        if (r.dir === "h") { if (cellT(P, k, r.line - 1) === "slab") a++; if (cellT(P, k, r.line) === "slab") b++; }
+        else { if (cellT(P, r.line - 1, k) === "slab") a++; if (cellT(P, r.line, k) === "slab") b++; }
+      }
+      const n = r.b - r.a; return [a > n / 2, b > n / 2];
+    };
+    const [sA, sB] = sideTypes();
+    r.type = sA && sB ? "T-beam" : (sA || sB ? "L-beam" : "Rectangular");
+    // clear distance to next parallel beam (for flange width): use adjacent panel dimensions
+    const clearTo = (side) => {
+      let best = 0;
+      for (let k = r.a; k < r.b; k++) {
+        let i, j;
+        if (r.dir === "h") { i = k; j = side ? r.line : r.line - 1; } else { i = side ? r.line : r.line - 1; j = k; }
+        if (cellT(P, i, j) !== "slab") continue;
+        const dim = r.dir === "h" ? (P.gy[j + 1] - P.gy[j]) : (P.gx[i + 1] - P.gx[i]);
+        best = Math.max(best, dim);
+      }
+      return best;
+    };
+    const b1 = sA ? clearTo(0) / 2 : 0, b2 = sB ? clearTo(1) / 2 : 0;
+    let chosen = null;
+    const minIdx = Math.max(0, BEAM_SIZES.findIndex(s => s[1] >= (P.beamMinH || 450)));
+    for (let si = minIdx; si < BEAM_SIZES.length; si++) {
+      const [bw, h] = BEAM_SIZES[si];
+      const hf = lvl.h;
+      const sw = bw / 1000 * (h - hf) / 1000 * 25;
+      const an = analyseRun(r, C, sw);
+      const d = h - cover - link - 10;
+      let ok = true; const spans = [];
+      r.el.forEach((e, i) => {
+        const env = an.env[i];
+        const isSpan = e.kind === "span";
+        const nsp = r.el.filter(x => x.kind === "span").length;
+        const idx = r.el.filter((x, k) => x.kind === "span" && k < i).length;
+        const kind = !isSpan ? "cant" : (nsp === 1 ? "ss" : (idx === 0 || idx === nsp - 1 ? "end" : "int"));
+        const l0 = { ss: 1, end: 0.85, int: 0.7, cant: 1 }[kind] * e.L * 1000;
+        let bf = bw;
+        if (r.type !== "Rectangular" && isSpan) {
+          if (C.ec) bf = bw + (b1 ? Math.min(0.2 * b1 + 0.1 * l0, 0.2 * l0, b1) : 0) + (b2 ? Math.min(0.2 * b2 + 0.1 * l0, 0.2 * l0, b2) : 0);
+          else bf = Math.min(bw + (r.type === "T-beam" ? l0 / 5 : l0 / 10), bw + b1 + b2);
+        }
+        const fs = isSpan && r.type !== "Rectangular" ? flexT(C, env.Mpos, bw, bf, d, hf) : flex(C, env.Mpos, bw, d);
+        const fl = flex(C, env.MnL, bw, d), fr = flex(C, env.MnR, bw, d);
+        if (fs.As2 > 0 || fl.As2 > 0 || fr.As2 > 0) ok = false;
+        const Amin = asMin(C, bw, d, h);
+        const bot = pickBars(Math.max(fs.As, Amin), bw, cover, link);
+        const topL = pickBars(Math.max(fl.As, env.MnL > 0 ? Amin : 0, 0.15 * fs.As), bw, cover, link);
+        const topR = pickBars(Math.max(fr.As, env.MnR > 0 ? Amin : 0, 0.15 * fs.As), bw, cover, link);
+        if (!bot || !topL || !topR) { ok = false; return; }
+        if (bot.layers > 1 || topL.layers > 1 || topR.layers > 1) { if (si < BEAM_SIZES.length - 2) ok = false; }
+        const lk = linksDesign(C, env.V, bw, d, bot.A);
+        if (!lk.ok) ok = false;
+        const mainAs = isSpan ? fs.As : Math.max(fl.As, fr.As), mainProv = isSpan ? bot.A : Math.max(topL.A, topR.A);
+        const ldA = ldAllow(C, kind, Math.max(mainAs, 1), mainProv, isSpan ? env.Mpos : Math.max(env.MnL, env.MnR), bw, d, e.L, bf / bw);
+        const ldC = e.L * 1000 / d;
+        if (ldC > ldA) ok = false;
+        spans.push({ dk: kind, l0, hf, b1, b2, kind: e.kind, L: e.L, g: an.gk[i], q: an.qk[i], Mpos: env.Mpos, MnL: env.MnL, MnR: env.MnR, V: env.V,
+                     bf, inFlange: fs.inFlange, bot, topL, topR, links: lk, ldA, ldC, As: fs.As });
+      });
+      chosen = { bw, h, d, an, spans, ok };
+      if (ok) break;
+    }
+    r.des = chosen;
+    r.status = chosen.ok ? (r.warn.length ? "CHECK" : "OK") : "REVISE";
+    return r;
+  }
+
+  // ---------------------------------------------------------- columns
+  function colCapacity(C, N, b, h, Aface, phi, cover = 30, link = 8) {
+    const d = h - cover - link - phi / 2, d2 = cover + link + phi / 2;
+    const blk = C.ec ? 0.8 : 0.9, pts = [];
+    for (let i = 1; i <= 80; i++) {
+      const x = h * 2 * i / 80, s = Math.min(blk * x, h), Fc = C.fcd * b * s;
+      const e1 = 0.0035 * (d - x) / x, e2 = 0.0035 * (x - d2) / x;
+      const f1 = Math.max(-C.fyd, Math.min(C.fyd, 200000 * e1)), f2 = Math.max(-C.fyd, Math.min(C.fyd, 200000 * e2));
+      pts.push([(Fc + Aface * f2 - Aface * f1) / 1000, (Fc * (h / 2 - s / 2) + Aface * f2 * (h / 2 - d2) + Aface * f1 * (d - h / 2)) / 1e6]);
+    }
+    const Nmax = (C.fcd * b * h + 2 * Aface * C.fyd) / 1000;
+    if (N >= Nmax) return 0;
+    if (N <= pts[0][0]) return pts[0][1];
+    for (let i = 0; i + 1 < pts.length; i++) if (pts[i][0] <= N && N <= pts[i + 1][0]) {
+      const t = (N - pts[i][0]) / (pts[i + 1][0] - pts[i][0]); return pts[i][1] + t * (pts[i + 1][1] - pts[i][1]);
+    }
+    return 0;
+  }
+  const COL_BARS = [[4, 12], [4, 16], [8, 12], [4, 20], [8, 16], [12, 16], [8, 20], [12, 20], [8, 25], [12, 25]];
+  function checkCol(P, C, N, Mx, My, b, l0, isTop, only) {
+    const h = b, Ac = b * b, cover = P.mat.cb;
+    for (const [nb, phi] of (only ? [only] : COL_BARS)) {
+      const Ast = nb * A(phi), perFace = nb === 4 ? 2 : (nb === 8 ? 3 : 4), Af = perFace * A(phi);
+      if (!only) {
+        if (C.ec) { if (Ast < Math.max(0.1 * N * 1000 / C.fyd, 0.002 * Ac) || Ast > 0.04 * Ac) continue; }
+        else { if (Ast < 0.004 * Ac || Ast > 0.06 * Ac) continue; }
+      }
+      const dd = h - cover - 8 - phi / 2;
+      const res = { nb, phi, Ast };
+      const axis = (M) => {
+        if (C.ec) {
+          const lam = l0 * 1000 * Math.sqrt(12) / h, n = N * 1000 / (Ac * C.fcd), om = Ast * C.fyd / (Ac * C.fcd);
+          const lamlim = 20 * 0.7 * Math.sqrt(1 + 2 * om) * 0.7 / Math.sqrt(Math.max(n, 0.01));
+          const slender = lam > lamlim;
+          const ei = l0 * 1000 / 400, e0 = Math.max(h / 30, 20);
+          let M0 = Math.max(M, 0) + N * ei / 1000;
+          let M2 = 0, Kr = 0, Kf = 0, e2 = 0;
+          if (slender) {
+            Kr = Math.min(1, Math.max(0, (1 + om - n) / (1 + om - 0.4)));
+            Kf = Math.max(1, 1 + (0.35 + C.fck / 200 - lam / 150) * 1.0);
+            e2 = Kr * Kf * (C.fyd / 200000) / (0.45 * dd) * (l0 * 1000) ** 2 / 10;
+            M2 = N * e2 / 1000;
+          }
+          const MEd = Math.max(M0 + M2, N * e0 / 1000);
+          return { lam, lamlim, slender, MEd, M2, M, n, om, ei, e0, M0, Kr, Kf, e2, dd };
+        }
+        const lam = l0 * 1000 / h, slender = lam >= 15;
+        let Madd = 0;
+        if (slender) {
+          const Nuz = (0.45 * C.fcu * (Ac - Ast) + 0.87 * C.fy * Ast) / 1000, Nbal = 0.25 * C.fcu * b * dd / 1000;
+          const K = Math.min(1, Math.max(0, (Nuz - N) / (Nuz - Nbal)));
+          Madd = N * (lam * lam / 2000) * K * h / 1000;
+          var bsx = { Nuz, Nbal, K };
+        }
+        const MEd = Math.max(M + Madd, N * Math.min(0.05 * h, 20) / 1000);
+        return Object.assign({ lam, lamlim: 15, slender, MEd, M2: Madd, M, emin: Math.min(0.05 * h, 20), dd }, bsx || {});
+      };
+      const ax = axis(Mx), ay = axis(My);
+      const MRd = colCapacity(C, N, b, h, Af, phi, cover);
+      let util;
+      if (C.ec) {
+        const NRd = (C.fcd * Ac + Ast * C.fyd) / 1000, rn = N / NRd;
+        const a = rn <= 0.1 ? 1 : (rn <= 0.7 ? 1 + (rn - 0.1) / 0.6 * 0.5 : 1.5 + (rn - 0.7) / 0.3 * 0.5);
+        util = MRd <= 0 ? 99 : Math.pow(ax.MEd / MRd, a) + Math.pow(ay.MEd / MRd, a);
+        Object.assign(res, { NRd, aExp: a });
+      } else {
+        const nr = N * 1000 / (Ac * C.fcu);
+        const tbl = [[0, .88], [.1, .77], [.2, .65], [.3, .53], [.4, .42], [.5, .30], [5, .30]];
+        let beta = 0.3; for (let i = 0; i + 1 < tbl.length; i++) if (nr >= tbl[i][0] && nr <= tbl[i + 1][0]) beta = tbl[i][1] + (nr - tbl[i][0]) / (tbl[i + 1][0] - tbl[i][0]) * (tbl[i + 1][1] - tbl[i][1]);
+        const Mmax = Math.max(ax.MEd, ay.MEd), Mmin = Math.min(ax.MEd, ay.MEd);
+        const Mp = Mmax + beta * Mmin;
+        util = MRd <= 0 ? 99 : Mp / MRd;
+        Object.assign(res, { nr, betaB: beta, Mp });
+      }
+      Object.assign(res, { ax, ay, MRd, util, ok: util <= 1, Af, perFace, b, cover });
+      if (res.ok || only) return res;
+    }
+    return null;
+  }
+
+  // roof covers the whole building: no balconies, stair voids roofed over
+  function roofOf(P) {
+    const Q = Object.assign({}, P, { cells: {} });
+    for (const [k, t] of Object.entries(P.cells)) Q.cells[k] = t === "balcony" ? "none" : (t === "void" ? "slab" : t);
+    return Q;
+  }
+
+  // ---------------------------------------------------------- full design
+  function design(P) {
+    const C = codeP(P);
+    const out = { C, levels: [], warn: [] };
+    if (!P.gx || P.gx.length < 2 || P.gy.length < 2) { out.warn.push("Grid needs at least 2 lines each way"); return out; }
+    const R0 = runs(P);
+    // name columns
+    const colKeys = Object.keys(P.cols).filter(k => P.cols[k]).map(k => k.split(",").map(Number))
+      .filter(([i, j]) => i < P.gx.length && j < P.gy.length)
+      .sort((a, b) => P.gy[a[1]] - P.gy[b[1]] || P.gx[a[0]] - P.gx[b[0]]);
+    const colName = {}; colKeys.forEach(([i, j], n) => colName[key(i, j)] = "C" + (n + 1));
+    out.colName = colName;
+    P.levels.forEach((lvl, li) => {
+      const Pl = lvl.kind === "roof" ? roofOf(P) : P;
+      const pre = lvl.kind === "roof" ? "R" : String(li + 1);
+      const PN = panels(Pl);
+      let sc = 0, cc = 0;
+      PN.forEach(p => { designPanel(Pl, C, p, lvl); p.mark = p.kind === "cant" ? `${pre}CS${++cc}` : `${pre}S${++sc}`; });
+      const SL = segLoads(Pl, PN, lvl);
+      const R = R0.map(r => Object.assign({}, r));
+      R.forEach(r => setupRun(Pl, R, r));
+      // element loads (length-weighted average over segments)
+      R.forEach(r => r.el.forEach(e => {
+        let g = 0, q = 0, len = 0, ext = false;
+        for (let k = e.k0; k < e.k1; k++) {
+          const sk = r.dir === "h" ? key("h", k, r.line) : key("v", r.line, k);
+          const ls = (posOf(Pl, r, k + 1) - posOf(Pl, r, k)) / 1000, o = SL[sk] || { g: 0, q: 0 };
+          g += o.g * ls; q += o.q * ls; len += ls; if (o.ext) ext = true;
+        }
+        e.g = len ? g / len : 0; e.q = len ? q / len : 0; e.ext = ext;
+      }));
+      // naming
+      R.forEach((r, n) => r.mark = `${pre}B${n + 1}`);
+      // dependency order
+      const dependents = R.map(() => []);
+      R.forEach(r => r.sup.forEach(s => { if (s.type === "beam") dependents[s.run].push(r.id); }));
+      const done = new Set(), order = [];
+      let guard = 0;
+      while (order.length < R.length && guard++ < R.length + 5) {
+        let prog = false;
+        R.forEach(r => { if (!done.has(r.id) && dependents[r.id].every(d => done.has(d))) { order.push(r); done.add(r.id); prog = true; } });
+        if (!prog) { R.forEach(r => { if (!done.has(r.id)) { order.push(r); done.add(r.id); r.warn.push("circular beam-on-beam support – add a column"); } }); }
+      }
+      const colLoads = {};
+      order.forEach(r => {
+        if (!r.el.length) { r.status = "REVISE"; r.des = null; return; }
+        designRun(Pl, C, r, lvl, PN);
+        const an = r.des.an;
+        r.sup.forEach((s, t) => {
+          const G = an.RG[t] || 0, Q = an.RQ[t] || 0;
+          if (s.type === "col") {
+            const o = colLoads[s.node] || (colLoads[s.node] = { G: 0, Q: 0, Mx: 0, My: 0 });
+            o.G += Math.max(G, 0); o.Q += Math.max(Q, 0);
+            if (G < 0) r.warn.push(`uplift ${(-G).toFixed(0)} kN at ${colName[s.node] || s.node} – anchor top bars`);
+            // unbalanced moment for column
+            const elL = r.el.find(e => e.k1 === s.k), elR = r.el.find(e => e.k0 === s.k);
+            const fem = (e, full) => {
+              if (!e) return 0;
+              const i = r.el.indexOf(e), w = C.gG * (e.g + r.des.an.gk[i] - e.g) + (full ? C.gQ * e.q : 0);
+              if (e.kind !== "span") return w * e.L * e.L / 2;
+              let f = w * e.L * e.L / 12;
+              for (const p of e.pts) f += (C.gG * p.G + (full ? C.gQ * p.Q : 0)) * p.a * (e.L - p.a) / e.L * 0.5;
+              return f;
+            };
+            const unb = elL && elR ? Math.max(Math.abs(fem(elL, true) - fem(elR, false)), Math.abs(fem(elR, true) - fem(elL, false))) : fem(elL || elR, true);
+            const share = li === P.levels.length - 1 ? 0.6 : 0.4;
+            if (r.dir === "h") o.Mx += share * unb; else o.My += share * unb;
+          } else {
+            // point load to supporting run
+            const pr = R[s.run], pos = posOf(Pl, pr, r.dir === "h" ? nodeOf(r, s.k)[pr.dir === "h" ? 0 : 1] : nodeOf(r, s.k)[pr.dir === "h" ? 0 : 1]);
+            const [ni, nj] = nodeOf(r, s.k);
+            const kk = pr.dir === "h" ? ni : nj;
+            const e = pr.el.find(e => e.k0 <= kk && kk <= e.k1);
+            if (!e) { r.warn.push("support beam element not found"); return; }
+            const a = e.kind === "cantL" ? (posOf(Pl, pr, e.k1) - posOf(Pl, pr, kk)) / 1000 : (posOf(Pl, pr, kk) - posOf(Pl, pr, e.k0)) / 1000;
+            e.pts.push({ a, G, Q, from: r.mark });
+          }
+        });
+      });
+      out.levels.push({ lvl, pre, panels: PN, runs: R, colLoads, P: Pl });
+    });
+    // columns
+    const cols = [];
+    colKeys.forEach(([i, j]) => {
+      const k = key(i, j); const nm = colName[k];
+      const storeys = [];
+      let G = 0, Q = 0;
+      for (let li = P.levels.length - 1; li >= 0; li--) {
+        const L = out.levels[li], o = L.colLoads[k] || { G: 0, Q: 0, Mx: 0, My: 0 };
+        G += o.G; Q += o.Q;
+        storeys.unshift({ li, G, Q, Mx: o.Mx, My: o.My, H: P.levels[li].H });
+      }
+      if (G === 0 && Q === 0) out.warn.push(`${nm} carries no beam – remove or add beams`);
+      let res = null;
+      for (const b of [225, 250, 300, 350, 400, 450, 500, 600].filter(v => v >= (P.colMin || 225))) {
+        let sw = 0; const des = []; let ok = true;
+        for (let s = storeys.length - 1; s >= 0; s--) {
+          sw += b * b / 1e6 * 25 * storeys[s].H;
+          const st = storeys[s], N = C.gG * (st.G + sw) + C.gQ * st.Q;
+          const l0 = P.beta * st.H;
+          const r = checkCol(P, C, N, st.Mx, st.My, b, l0, s === storeys.length - 1);
+          if (!r) { ok = false; break; }
+          des[s] = Object.assign(r, { N, Gk: st.G + sw, Qk: st.Q, level: P.levels[st.li].name, l0, Mx: st.Mx, My: st.My, H: st.H, sw, Gbeams: st.G, checkedBars: `${r.nb}H${r.phi}` });
+        }
+        if (ok) {
+          // use the heaviest bar arrangement in every storey (bars run continuously, never more above than below)
+          const big = des.reduce((m, d) => d.Ast > m.Ast ? d : m, des[0]);
+          des.forEach((d, s) => { if (d.Ast < big.Ast) { const chk = d.checkedBars; const r2 = checkCol(P, C, d.N, d.Mx, d.My, b, d.l0, false, [big.nb, big.phi]); Object.assign(d, r2, { unified: true, checkedBars: `${big.nb}H${big.phi}` }); } });
+          res = { b, des }; break;
+        }
+      }
+      cols.push({ key: k, i, j, name: nm, x: P.gx[i], y: P.gy[j], res, status: res ? "OK" : "REVISE" });
+    });
+    out.cols = cols;
+    return out;
+  }
+
+  // ---------------------------------------------------------- auto layout from walls
+  function snapList(vals, tol = 200) {
+    const s = vals.slice().sort((a, b) => a - b), out = [];
+    for (const v of s) { if (out.length && v - out[out.length - 1].v <= tol) { const o = out[out.length - 1]; o.v = (o.v * o.n + v) / (o.n + 1); o.n++; } else out.push({ v, n: 1 }); }
+    return out.map(o => Math.round(o.v / 25) * 25);
+  }
+  const nearest = (arr, v) => { let b = 0; arr.forEach((x, i) => { if (Math.abs(x - v) < Math.abs(arr[b] - v)) b = i; }); return b; };
+
+  function fromAI(J, below) {
+    const P = { gx: [], gy: [], cols: {}, beams: {}, cells: {}, rooms: J.rooms || [], below: below || null };
+    const walls = (J.walls || []).filter(w => w && (w.dir === "h" || w.dir === "v"));
+    const xs = (J.grid_x_mm || []).concat(walls.filter(w => w.dir === "v").map(w => +w.x_mm));
+    const ys = (J.grid_y_mm || []).concat(walls.filter(w => w.dir === "h").map(w => +w.y_mm));
+    (J.balconies || []).concat(J.outside || []).forEach(r => { xs.push(+r.x1_mm, +r.x2_mm); ys.push(+r.y1_mm, +r.y2_mm); });
+    P.gx = snapList(xs.filter(Number.isFinite)); P.gy = snapList(ys.filter(Number.isFinite));
+    for (const w of walls) {
+      if (w.dir === "h") {
+        const j = nearest(P.gy, +w.y_mm), a = nearest(P.gx, Math.min(+w.x1_mm, +w.x2_mm)), b = nearest(P.gx, Math.max(+w.x1_mm, +w.x2_mm));
+        for (let i = a; i < b; i++) P.beams[key("h", i, j)] = { wall: 1 };
+      } else {
+        const i = nearest(P.gx, +w.x_mm), a = nearest(P.gy, Math.min(+w.y1_mm, +w.y2_mm)), b = nearest(P.gy, Math.max(+w.y1_mm, +w.y2_mm));
+        for (let j = a; j < b; j++) P.beams[key("v", i, j)] = { wall: 1 };
+      }
+    }
+    const inside = (r, x, y) => x > Math.min(+r.x1_mm, +r.x2_mm) && x < Math.max(+r.x1_mm, +r.x2_mm) && y > Math.min(+r.y1_mm, +r.y2_mm) && y < Math.max(+r.y1_mm, +r.y2_mm);
+    for (let i = 0; i + 1 < P.gx.length; i++) for (let j = 0; j + 1 < P.gy.length; j++) {
+      const cx = (P.gx[i] + P.gx[i + 1]) / 2, cy = (P.gy[j] + P.gy[j + 1]) / 2;
+      let t = "slab";
+      if ((J.outside || []).some(r => inside(r, cx, cy))) t = "none";
+      if ((J.balconies || []).some(r => inside(r, cx, cy))) t = "balcony";
+      if ((J.voids || []).some(r => inside(r, cx, cy))) t = "void";
+      if (t !== "slab") P.cells[key(i, j)] = t;
+    }
+    // cells outside the walled perimeter: mark none if not enclosed by any wall in any direction (simple test)
+    return P;
+  }
+
+  function onBelow(P, x, y, tol = 150) {
+    if (!P.below || !P.below.length) return true;
+    return P.below.some(w => w.dir === "h" ? Math.abs(+w.y_mm - y) <= tol && x >= Math.min(+w.x1_mm, +w.x2_mm) - tol && x <= Math.max(+w.x1_mm, +w.x2_mm) + tol
+                                          : Math.abs(+w.x_mm - x) <= tol && y >= Math.min(+w.y1_mm, +w.y2_mm) - tol && y <= Math.max(+w.y1_mm, +w.y2_mm) + tol);
+  }
+
+  function autoColumns(P) {
+    P.cols = {};
+    const NX = nx(P), NY = ny(P);
+    for (let i = 0; i <= NX; i++) for (let j = 0; j <= NY; j++) {
+      const h = (hasB(P, key("h", i - 1, j)) ? 1 : 0) + (hasB(P, key("h", i, j)) ? 1 : 0);
+      const v = (hasB(P, key("v", i, j - 1)) ? 1 : 0) + (hasB(P, key("v", i, j)) ? 1 : 0);
+      if (h && v) {
+        const corner = h === 1 && v === 1, edge = (h + v === 3);
+        // perimeter junctions always; interior junctions only if wall below
+        const ext = [cellT(P, i - 1, j - 1), cellT(P, i, j - 1), cellT(P, i - 1, j), cellT(P, i, j)].some(t => t === "none" || t === "balcony");
+        if ((corner || ext) && onBelow(P, P.gx[i], P.gy[j], 400)) P.cols[key(i, j)] = 1;
+        else if (P.below && P.below.length && onBelow(P, P.gx[i], P.gy[j])) P.cols[key(i, j)] = 1;
+        else if (!P.below && (corner || edge || ext)) P.cols[key(i, j)] = 1;
+      }
+    }
+    // enforce max span between columns on each run
+    const R = runs(P);
+    for (const r of R) {
+      let last = r.a;
+      for (let k = r.a + 1; k <= r.b; k++) {
+        const [i, j] = nodeOf(r, k);
+        if (P.cols[key(i, j)] || k === r.b) {
+          const span = posOf(P, r, k) - posOf(P, r, last);
+          if (span > (P.maxSpan || 6000)) {
+            // add column at intermediate node nearest the middle that has a perpendicular wall or wall below
+            let best = null;
+            for (let m = last + 1; m < k; m++) {
+              const [ii, jj] = nodeOf(r, m);
+              const perp = r.dir === "h" ? (hasB(P, key("v", ii, jj - 1)) || hasB(P, key("v", ii, jj))) : (hasB(P, key("h", ii - 1, jj)) || hasB(P, key("h", ii, jj)));
+              const score = Math.abs(posOf(P, r, m) - (posOf(P, r, last) + posOf(P, r, k)) / 2) - (perp ? 1e5 : 0) - (onBelow(P, P.gx[ii], P.gy[jj]) && P.below ? 1e5 : 0);
+              if (!best || score < best.score) best = { m, score };
+            }
+            if (best) { const [ii, jj] = nodeOf(r, best.m); P.cols[key(ii, jj)] = 1; }
+          }
+          last = k;
+        }
+      }
+    }
+    return P;
+  }
+
+  // re-map features when grid lists change
+  function regrid(P, gx, gy) {
+    const old = { gx: P.gx, gy: P.gy };
+    const cols = Object.keys(P.cols).filter(k => P.cols[k]).map(k => { const [i, j] = k.split(",").map(Number); return [old.gx[i], old.gy[j]]; });
+    const beams = Object.entries(P.beams).map(([k, v]) => { const [d, i, j] = k.split(","); const I = +i, J = +j;
+      return d === "h" ? { d, x1: old.gx[I], x2: old.gx[I + 1], y: old.gy[J], v } : { d, y1: old.gy[J], y2: old.gy[J + 1], x: old.gx[I], v }; });
+    const cells = Object.entries(P.cells).map(([k, t]) => { const [i, j] = k.split(",").map(Number); return [(old.gx[i] + old.gx[i + 1]) / 2, (old.gy[j] + old.gy[j + 1]) / 2, t]; });
+    P.gx = gx.slice().sort((a, b) => a - b); P.gy = gy.slice().sort((a, b) => a - b);
+    P.cols = {}; P.beams = {}; P.cells = {};
+    const near = (arr, v) => { const i = nearest(arr, v); return Math.abs(arr[i] - v) <= 300 ? i : -1; };
+    cols.forEach(([x, y]) => { const i = near(P.gx, x), j = near(P.gy, y); if (i >= 0 && j >= 0) P.cols[key(i, j)] = 1; });
+    beams.forEach(b => {
+      if (b.d === "h") { const j = near(P.gy, b.y), a = near(P.gx, b.x1), c = near(P.gx, b.x2); if (j < 0 || a < 0 || c < 0) return; for (let i = a; i < c; i++) P.beams[key("h", i, j)] = b.v; }
+      else { const i = near(P.gx, b.x), a = near(P.gy, b.y1), c = near(P.gy, b.y2); if (i < 0 || a < 0 || c < 0) return; for (let j = a; j < c; j++) P.beams[key("v", i, j)] = b.v; }
+    });
+    cells.forEach(([x, y, t]) => {
+      for (let i = 0; i + 1 < P.gx.length; i++) for (let j = 0; j + 1 < P.gy.length; j++)
+        if (x > P.gx[i] && x < P.gx[i + 1] && y > P.gy[j] && y < P.gy[j + 1]) P.cells[key(i, j)] = t;
+    });
+  }
+
+  return { _solve: solve, design, panels, runs, autoColumns, fromAI, regrid, snapList, codeP, flex, flexT, asMin, ldAllow, ldEC, vcConc, linksDesign, interp, panelTrib, colCapacity, bt, st, A, key, cellT, T314 };
+})();
+if (typeof module !== "undefined") module.exports = SD;
+
+/* Demo project: Mr Mbaka residence first floor framing (walls from the first-floor plan) */
+function demoProject() {
+  const J = {
+    grid_x_mm: [-1800, 0, 4950, 6400, 8850, 11800, 13300],
+    grid_y_mm: [0, 3950, 6500, 8000, 9800],
+    walls: [
+      { dir: "h", y_mm: 0, x1_mm: 0, x2_mm: 11800 }, { dir: "h", y_mm: 9800, x1_mm: 0, x2_mm: 11800 },
+      { dir: "v", x_mm: 0, y1_mm: 0, y2_mm: 9800 }, { dir: "v", x_mm: 11800, y1_mm: 0, y2_mm: 9800 },
+      { dir: "h", y_mm: 3950, x1_mm: 0, x2_mm: 11800 }, { dir: "h", y_mm: 6500, x1_mm: 0, x2_mm: 8850 },
+      { dir: "v", x_mm: 4950, y1_mm: 0, y2_mm: 3950 }, { dir: "v", x_mm: 4950, y1_mm: 6500, y2_mm: 9800 },
+      { dir: "v", x_mm: 8850, y1_mm: 0, y2_mm: 9800 }, { dir: "v", x_mm: 6400, y1_mm: 3950, y2_mm: 9800 },
+      { dir: "h", y_mm: 8000, x1_mm: 8850, x2_mm: 11800 }
+    ],
+    voids: [{ x1_mm: 6400, y1_mm: 6500, x2_mm: 8850, y2_mm: 9800, label: "stair" }],
+    balconies: [{ x1_mm: -1800, y1_mm: 0, x2_mm: 0, y2_mm: 3950 }, { x1_mm: 11800, y1_mm: 0, x2_mm: 13300, y2_mm: 3950 }],
+    outside: [{ x1_mm: -1800, y1_mm: 3950, x2_mm: 0, y2_mm: 9800 }, { x1_mm: 11800, y1_mm: 3950, x2_mm: 13300, y2_mm: 9800 }],
+    rooms: [{ name: "Master bedroom", x_mm: 2400, y_mm: 2000 }, { name: "Ensuite / WIC", x_mm: 6900, y_mm: 2000 }, { name: "Master lounge", x_mm: 10300, y_mm: 2000 },
+            { name: "Family room", x_mm: 3200, y_mm: 5200 }, { name: "Landing", x_mm: 7600, y_mm: 5200 }, { name: "Bedroom 2", x_mm: 10300, y_mm: 5800 },
+            { name: "Cinema", x_mm: 2400, y_mm: 8200 }, { name: "Powder", x_mm: 5650, y_mm: 8200 }, { name: "Stair", x_mm: 7600, y_mm: 8200 }, { name: "Ensuite", x_mm: 10300, y_mm: 8900 }]
+  };
+  const below = [ // ground-floor walls (same origin)
+    { dir: "h", y_mm: 0, x1_mm: 0, x2_mm: 11800 }, { dir: "h", y_mm: 9800, x1_mm: 0, x2_mm: 11800 },
+    { dir: "v", x_mm: 0, y1_mm: 0, y2_mm: 9800 }, { dir: "v", x_mm: 11800, y1_mm: 0, y2_mm: 9800 },
+    { dir: "v", x_mm: 6400, y1_mm: 0, y2_mm: 5200 }, { dir: "h", y_mm: 2900, x1_mm: 6400, x2_mm: 11800 },
+    { dir: "h", y_mm: 3600, x1_mm: 0, x2_mm: 6400 }, { dir: "h", y_mm: 5100, x1_mm: 6400, x2_mm: 11800 },
+    { dir: "h", y_mm: 5700, x1_mm: 0, x2_mm: 4700 }, { dir: "v", x_mm: 4800, y1_mm: 5700, y2_mm: 9800 },
+    { dir: "v", x_mm: 6500, y1_mm: 6400, y2_mm: 9800 }, { dir: "v", x_mm: 8900, y1_mm: 6300, y2_mm: 9800 },
+    { dir: "h", y_mm: 6400, x1_mm: 8900, x2_mm: 11800 }
+  ];
+  return { J, below };
+}
+if (typeof module !== "undefined") module.exports = demoProject;
+
+/* Structural drawing sheets (A3 landscape, SVG in mm) */
+const SHEETS = (() => {
+  const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const W = 420, H = 297;
+  const T = (x, y, s, sz = 2.5, o = {}) => `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="${sz}" font-family="Arial,Helvetica,sans-serif"${o.a ? ` text-anchor="${o.a}"` : ""}${o.b ? ` font-weight="bold"` : ""}${o.c ? ` fill="${o.c}"` : ""}${o.r ? ` transform="rotate(${o.r} ${x.toFixed(2)} ${y.toFixed(2)})"` : ""}>${esc(s)}</text>`;
+  const Ln = (x1, y1, x2, y2, w = 0.25, c = "#000", dash) => `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${c}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ""}/>`;
+  const Rc = (x, y, w, h, f = "none", s = "#000", sw = 0.25, extra = "") => `<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${Math.max(w, 0).toFixed(2)}" height="${Math.max(h, 0).toFixed(2)}" fill="${f}" stroke="${s}" stroke-width="${sw}" ${extra}/>`;
+  const letters = i => { let s = ""; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+
+  function frame(P, title, no, inner, scaleTxt) {
+    const I = P.info || {};
+    const tb = [
+      Rc(8, 8, W - 16, H - 16, "none", "#000", 0.5),
+      Rc(8, 268, W - 16, 21, "#fff", "#000", 0.4),
+      Ln(118, 268, 118, 289, 0.3), Ln(208, 268, 208, 289, 0.3), Ln(270, 268, 270, 289, 0.3), Ln(362, 268, 362, 289, 0.3),
+      T(10, 271.5, "COMPANY", 1.6, { c: "#666" }), T(10, 276, (I.company || "").toUpperCase(), 2.6, { b: 1 }), T(10, 280.5, I.address || "", 1.9), T(10, 284.5, I.phone || "", 1.9),
+      T(120, 271.5, "PROJECT / CLIENT", 1.6, { c: "#666" }), T(120, 276, I.name || "", 2.4, { b: 1 }), T(120, 281, "Client: " + (I.client || ""), 2.2), T(120, 285.5, I.location || "", 1.9),
+      T(210, 271.5, "DESIGNED / DRAWN BY", 1.6, { c: "#666" }), T(210, 276.5, I.engineer || "", 2.2, { b: 1 }), T(210, 281.5, I.engineer2 || "", 2.2, { b: 1 }),
+      T(272, 271.5, "DRAWING TITLE", 1.6, { c: "#666" }), T(272, 276.5, title, 2.5, { b: 1 }), T(272, 281.5, `Design code: ${P.code === "EC2" ? "BS EN 1992-1-1 (EC2)" : "BS 8110-1:1997"}`, 1.9), T(272, 285.5, `C${P.code === "EC2" ? P.mat.fck : P.mat.fcu} concrete · B${P.code === "EC2" ? P.mat.fyk : P.mat.fy} steel`, 1.9),
+      T(364, 271.5, "SHEET / SCALE / DATE", 1.6, { c: "#666" }), T(364, 277, no, 3.2, { b: 1 }), T(364, 282, scaleTxt || "NTS", 2.1), T(364, 286, I.date || new Date().toISOString().slice(0, 10), 2.0)
+    ].join("");
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}mm" height="${H}mm"><rect width="${W}" height="${H}" fill="#fff"/>${inner}${tb}</svg>`;
+  }
+
+  // ------------------------------------------------------------ framing plan
+  function framing(P, D, L, no) {
+    const gx = P.gx, gy = P.gy, xmin = gx[0], xmax = gx[gx.length - 1], ymin = gy[0], ymax = gy[gy.length - 1];
+    const Wm = xmax - xmin, Hm = ymax - ymin;
+    const scales = [50, 75, 100, 125, 150, 200, 250, 300, 400, 500];
+    const r = scales.find(s => Wm / s <= 270 && Hm / s <= 205) || 500, s = 1 / r;
+    const ox = 32 + (275 - Wm * s) / 2, oy = 34 + (210 - Hm * s) / 2;
+    const X = x => ox + (x - xmin) * s, Y = y => oy + (y - ymin) * s;
+    const o = [];
+    o.push(T(14, 17, `${L.lvl.name.toUpperCase()} – FRAMING & SLAB REINFORCEMENT PLAN`, 4.2, { b: 1 }));
+    // cells
+    for (let i = 0; i + 1 < gx.length; i++) for (let j = 0; j + 1 < gy.length; j++) {
+      const t = SD.cellT(L.P || P, i, j), x = X(gx[i]), y = Y(gy[j]), w = (gx[i + 1] - gx[i]) * s, h = (gy[j + 1] - gy[j]) * s;
+      if (t === "slab") o.push(Rc(x, y, w, h, "#f7f7f2", "none", 0));
+      if (t === "balcony") o.push(Rc(x, y, w, h, "#ecebfb", "none", 0));
+      if (t === "void") { o.push(Ln(x, y, x + w, y + h, 0.2, "#888"), Ln(x + w, y, x, y + h, 0.2, "#888"), T(x + w / 2, y + h / 2 + 1, "VOID", 2.2, { a: "middle", c: "#666" })); }
+    }
+    // grid
+    gx.forEach((v, i) => { o.push(Ln(X(v), oy - 14, X(v), Y(ymax) + 4, 0.18, "#999", "4 1 0.6 1")); o.push(`<circle cx="${X(v).toFixed(2)}" cy="${(oy - 17).toFixed(2)}" r="3" fill="#fff" stroke="#000" stroke-width="0.3"/>`, T(X(v), oy - 15.9, letters(i), 2.8, { a: "middle", b: 1 })); });
+    gy.forEach((v, j) => { o.push(Ln(ox - 14, Y(v), X(xmax) + 4, Y(v), 0.18, "#999", "4 1 0.6 1")); o.push(`<circle cx="${(ox - 17).toFixed(2)}" cy="${Y(v).toFixed(2)}" r="3" fill="#fff" stroke="#000" stroke-width="0.3"/>`, T(ox - 17, Y(v) + 1, String(j + 1), 2.8, { a: "middle", b: 1 })); });
+    for (let i = 0; i + 1 < gx.length; i++) { const a = X(gx[i]), b = X(gx[i + 1]); o.push(Ln(a, oy - 8, b, oy - 8, 0.2), Ln(a, oy - 9.2, a, oy - 6.8, 0.2), T((a + b) / 2, oy - 8.8, String(Math.round(gx[i + 1] - gx[i])), 1.9, { a: "middle" })); }
+    for (let j = 0; j + 1 < gy.length; j++) { const a = Y(gy[j]), b = Y(gy[j + 1]); o.push(Ln(ox - 8, a, ox - 8, b, 0.2), Ln(ox - 9.2, a, ox - 6.8, a, 0.2), T(ox - 8.8, (a + b) / 2, String(Math.round(gy[j + 1] - gy[j])), 1.9, { a: "middle", r: -90 })); }
+    // beams
+    for (const r0 of L.runs) {
+      if (!r0.des) continue;
+      const bw = Math.max(r0.des.bw * s, 0.9);
+      const a = r0.dir === "h" ? [X(gx[r0.a]), Y(gy[r0.line])] : [X(gx[r0.line]), Y(gy[r0.a])];
+      const b = r0.dir === "h" ? [X(gx[r0.b]), Y(gy[r0.line])] : [X(gx[r0.line]), Y(gy[r0.b])];
+      if (r0.dir === "h") o.push(Rc(a[0], a[1] - bw / 2, b[0] - a[0], bw, r0.status === "REVISE" ? "#f6c6c6" : "#d6d6d6", "#333", 0.18, 'stroke-dasharray="1.2 0.6"'));
+      else o.push(Rc(a[0] - bw / 2, a[1], bw, b[1] - a[1], r0.status === "REVISE" ? "#f6c6c6" : "#d6d6d6", "#333", 0.18, 'stroke-dasharray="1.2 0.6"'));
+      const lab = `${r0.mark} ${r0.des.bw}×${r0.des.h}`;
+      // place label on longest element
+      let best = r0.el[0], bi = 0; r0.el.forEach((e, k) => { if (e.L > best.L) { best = e; bi = k; } });
+      const pa = r0.dir === "h" ? gx : gy;
+      const mid = (pa[best.k0] + pa[best.k1]) / 2;
+      if (r0.dir === "h") o.push(T(X(mid), a[1] - bw / 2 - 0.8, lab, 2.0, { a: "middle", b: 1 }));
+      else o.push(T(a[0] - bw / 2 - 0.8, Y(mid), lab, 2.0, { a: "middle", b: 1, r: -90 }));
+    }
+    // panels
+    for (const p of L.panels) {
+      if (!p.d) continue;
+      const cx = X((p.x0 + p.x1) / 2), cy = Y((p.y0 + p.y1) / 2), pw = (p.x1 - p.x0) * s;
+      const fs = Math.min(2.3, Math.max(1.4, pw / 22));
+      const R = p.d.rows;
+      o.push(T(cx, cy - fs * 1.6, p.mark, fs * 1.25, { a: "middle", b: 1, c: "#0b4f8a" }));
+      if (p.kind === "cant") {
+        o.push(T(cx, cy, `CANT. h=${p.d.h}`, fs, { a: "middle" }), T(cx, cy + fs * 1.3, `T: ${SD.st(R.sxn.bars)}`, fs, { a: "middle", c: "#a00" }), T(cx, cy + fs * 2.6, `dist: ${SD.st(R.syn.bars)}`, fs * 0.9, { a: "middle" }));
+      } else {
+        const bx = p.shortAlongX ? R.sxp : R.syp, by = p.shortAlongX ? R.syp : R.sxp;
+        const top = [R.sxn, R.syn].filter(x => x && x.bars).sort((a, b) => b.bars.A - a.bars.A)[0];
+        o.push(T(cx, cy, `h=${p.d.h}`, fs, { a: "middle" }));
+        o.push(T(cx, cy + fs * 1.3, `B↔ ${SD.st(bx.bars)}`, fs, { a: "middle" }));
+        o.push(T(cx, cy + fs * 2.6, `B↕ ${SD.st(by.bars)}`, fs, { a: "middle" }));
+        if (top) o.push(T(cx, cy + fs * 3.9, `T ${SD.st(top.bars)}`, fs, { a: "middle", c: "#a00" }));
+      }
+    }
+    // columns
+    for (const c of D.cols) {
+      if (!c.res) { o.push(Rc(X(c.x) - 1.2, Y(c.y) - 1.2, 2.4, 2.4, "#c00", "none")); continue; }
+      const z = Math.max(c.res.b * s, 1.8);
+      o.push(Rc(X(c.x) - z / 2, Y(c.y) - z / 2, z, z, "#111", "none"));
+      o.push(T(X(c.x) + z / 2 + 0.5, Y(c.y) + z / 2 + 2.2, c.name, 1.9, { c: "#b00020", b: 1 }));
+    }
+    // notes column
+    const lv = L.lvl, nx0 = 318;
+    const n = [
+      ["LEVEL", lv.name], ["Slab", `${lv.h} mm UNO (see marks)`], ["Finishes + services", `${lv.fin} kN/m²`], ["Partitions", `${lv.part} kN/m²`],
+      ["Imposed qk", `${lv.qk} kN/m² (balconies ≥ 2.5)`], ["Walls on beams", lv.kind === "roof" ? `parapet ${lv.ext} kN/m` : `ext ${lv.ext} / int ${lv.int} kN/m`],
+      ["Cover", `slabs ${P.mat.cs} · beams/cols ${P.mat.cb} mm`]
+    ];
+    o.push(Rc(nx0 - 2, 24, 96, 240, "#fff", "#999", 0.2));
+    o.push(T(nx0, 30, "NOTES", 3, { b: 1 }));
+    let y = 36;
+    for (const [k, v] of n) { o.push(T(nx0, y, k + ":", 2.0, { b: 1 }), T(nx0 + 30, y, v, 2.0)); y += 4.2; }
+    y += 2;
+    const notes = [
+      "B↔ = bottom bars spanning left–right; B↕ = bottom bars",
+      "spanning up–down (short-span bars in outer layer).",
+      "T = top bars over supporting beams, extend 0.3 lx",
+      "each side; at discontinuous edges top bars ≥ 50% of",
+      "midspan steel for 0.15 lx.",
+      "Cantilever (CS) top bars anchored ≥ 1.5 × projection",
+      "into the adjoining slab.",
+      "Beams: overall depth incl. slab; see beam schedule.",
+      "Columns: see column schedule.",
+      "Read with architectural drawings. Do not scale.",
+      `Scale 1:${r} at A3.`
+    ];
+    for (const t of notes) { o.push(T(nx0, y, t, 1.9)); y += 3.4; }
+    y += 3;
+    o.push(T(nx0, y, "LEGEND", 2.6, { b: 1 })); y += 4;
+    o.push(Rc(nx0, y - 2.5, 8, 2.2, "#d6d6d6", "#333", 0.18, 'stroke-dasharray="1.2 0.6"'), T(nx0 + 10, y - 0.6, "beam (downstand)", 2)); y += 4;
+    o.push(Rc(nx0 + 2.5, y - 2.8, 3, 3, "#111", "none"), T(nx0 + 10, y - 0.6, "column", 2)); y += 4;
+    o.push(Rc(nx0, y - 2.5, 8, 2.5, "#ecebfb", "none"), T(nx0 + 10, y - 0.6, "balcony / cantilever slab", 2)); y += 4;
+    o.push(Ln(nx0, y - 2.5, nx0 + 8, y, 0.2, "#888"), Ln(nx0 + 8, y - 2.5, nx0, y, 0.2, "#888"), T(nx0 + 10, y - 0.6, "void / stair", 2)); y += 4;
+    const warns = [].concat(...L.panels.map(p => p.warn.map(w => `${p.mark}: ${w}`)), ...L.runs.map(r => r.warn.map(w => `${r.mark}: ${w}`)));
+    if (warns.length) {
+      y += 2; o.push(T(nx0, y, "CHECK", 2.6, { b: 1, c: "#b00020" })); y += 3.6;
+      for (const w of warns.slice(0, 12)) { o.push(T(nx0, y, w.slice(0, 58), 1.7, { c: "#b00020" })); y += 3; }
+    }
+    return frame(P, `${lv.name} framing plan`, no, o.join(""), `1:${r} @ A3`);
+  }
+
+  // ------------------------------------------------------------ tables
+  function table(x, y, cols, rows, rh = 4.6) {
+    const fz = Math.min(2.0, rh * 0.46);
+    const o = []; let cx = x;
+    const tw = cols.reduce((s, c) => s + c[1], 0);
+    o.push(Rc(x, y, tw, rh, "#e8eef5", "#000", 0.25));
+    cols.forEach(([h, w]) => { o.push(T(cx + 1, y + rh - rh * 0.3, h, fz, { b: 1 })); cx += w; });
+    rows.forEach((r, k) => {
+      const yy = y + rh * (k + 1);
+      if (r.sep) o.push(Ln(x, yy, x + tw, yy, 0.35));
+      cx = x;
+      r.cells.forEach((v, i) => { o.push(T(cx + 1, yy + rh - rh * 0.3, v, fz, { c: r.col && r.col[i] ? r.col[i] : null, b: r.bold && r.bold[i] })); cx += cols[i][1]; });
+      o.push(Ln(x, yy + rh, x + tw, yy + rh, 0.1, "#bbb"));
+    });
+    o.push(Rc(x, y, tw, rh * (rows.length + 1), "none", "#000", 0.3));
+    cx = x; cols.forEach(([, w]) => { o.push(Ln(cx, y, cx, y + rh * (rows.length + 1), 0.1, "#999")); cx += w; });
+    return o.join("");
+  }
+  const stc = s => s === "OK" ? "#0a7a2f" : (s === "CHECK" ? "#b36b00" : "#b00020");
+
+  function beamSchedule(P, D) {
+    const rows = [];
+    for (const L of D.levels) for (const r of L.runs) {
+      if (!r.des) { rows.push({ cells: [r.mark, L.lvl.name, "–", "–", "", "", "", "", "", "", "REVISE"], col: Array(10).fill(null).concat(["#b00020"]), sep: true }); continue; }
+      r.des.spans.forEach((s, k) => rows.push({
+        sep: k === 0,
+        cells: [k ? "" : r.mark, k ? "" : L.lvl.name, k ? "" : r.type, k ? "" : `${r.des.bw}×${r.des.h}`, s.kind === "span" ? `span ${r.des.spans.slice(0, k + 1).filter(x => x.kind === "span").length}` : "cantilever",
+                s.L.toFixed(2), SD.bt(s.bot) + (s.bot.layers > 1 ? " (2 layers)" : ""), SD.bt(s.topL), SD.bt(s.topR), `H8-2L@${s.links.s}`, k ? "" : r.status],
+        bold: [1], col: [null, null, null, null, null, null, null, null, null, null, stc(r.status)]
+      }));
+    }
+    const cols = [["Mark", 18], ["Level", 30], ["Type", 24], ["b × h", 20], ["Span", 22], ["L (m)", 14], ["Bottom", 34], ["Top left", 26], ["Top right", 26], ["Links", 26], ["Status", 16]];
+    const out = [], H0 = 232;
+    const pages = [];
+    if (rows.length + 1 <= Math.floor(H0 / 3.6)) pages.push(rows);
+    else { let cur = []; for (const r of rows) { if (r.sep && cur.length >= 46) { pages.push(cur); cur = []; } cur.push(r); } if (cur.length) pages.push(cur); }
+    pages.forEach((chunk, p) => {
+      const rh = Math.min(4.6, H0 / (chunk.length + 1));
+      let inner = T(14, 17, "BEAM SCHEDULE" + (pages.length > 1 ? ` (${p + 1} of ${pages.length})` : ""), 4.2, { b: 1 }) + table(14, 22, cols, chunk, rh);
+      inner += T(14, 262, "Bottom bars run full span, lapped 40Ø over supports. Top bars extend ≥0.3 L from support face. Links: 2-leg closed H8, first link 50 from face. Ends modelled as pinned: provide top bars ≥ 25% of span steel anchored into columns.", 2);
+      out.push({ title: "Beam schedule" + (pages.length > 1 ? ` ${p + 1}` : ""), body: inner });
+    });
+    return out;
+  }
+
+  function colSection(x, y, b, nb, phi) {
+    const sc = 0.09, w = b * sc, o = [Rc(x, y, w, w, "#f4f1ea", "#000", 0.3)];
+    const c = 38 * sc, rr = Math.max(phi / 2 * sc, 0.5);
+    o.push(Rc(x + c, y + c, w - 2 * c, w - 2 * c, "none", "#555", 0.2));
+    const per = nb === 4 ? 2 : (nb === 8 ? 3 : 4);
+    const pts = new Set();
+    for (let a = 0; a < per; a++) {
+      const t = c + rr + a * (w - 2 * c - 2 * rr) / (per - 1);
+      [[t, c + rr], [t, w - c - rr], [c + rr, t], [w - c - rr, t]].forEach(([px, py]) => pts.add(px.toFixed(2) + "," + py.toFixed(2)));
+    }
+    for (const p of pts) { const [px, py] = p.split(",").map(Number); o.push(`<circle cx="${(x + px).toFixed(2)}" cy="${(y + py).toFixed(2)}" r="${rr.toFixed(2)}" fill="#c00"/>`); }
+    return o.join("");
+  }
+
+  function columnSchedule(P, D) {
+    const rows = [];
+    for (const c of D.cols) {
+      const grid = `${letters(c.i)}/${c.j + 1}`;
+      if (!c.res) { rows.push({ cells: [c.name, grid, "–", "", "", "", "", "", "", "", "REVISE"], col: [null, null, null, null, null, null, null, null, null, null, "#b00020"], sep: true }); continue; }
+      c.res.des.forEach((d, k) => rows.push({ sep: k === 0, cells: [k ? "" : c.name, k ? "" : grid, k ? "" : `${c.res.b}×${c.res.b}`, `below ${d.level}`, d.N.toFixed(0), `${d.nb}H${d.phi}`, `H8@${Math.min(P.code === "EC2" ? 20 * d.phi : 12 * d.phi, c.res.b, 400) - (Math.min(P.code === "EC2" ? 20 * d.phi : 12 * d.phi, c.res.b, 400) % 25)}`,
+        d.ax.slender || d.ay.slender ? "LONG (slender)" : "SHORT", k ? "" : (d.Gk).toFixed(0), k ? "" : (d.Qk).toFixed(0), k ? "" : c.status], bold: [1, 0, 0, 0, 0, 1], col: [null, null, null, null, null, null, null, null, null, null, stc(c.status)] }));
+    }
+    const cols = [["Column", 14], ["Grid", 13], ["Size", 18], ["Storey", 32], ["NEd kN", 15], ["Bars", 15], ["Links", 16], ["Class", 25], ["Gk base", 15], ["Qk base", 15], ["Status", 14]];
+    let inner = T(14, 17, "COLUMN SCHEDULE & LOADS TO FOUNDATIONS", 4.2, { b: 1 }) + table(14, 24, cols, rows.slice(0, 48)) + T(14, 258, "Gk / Qk base = characteristic loads at foundation level (kN) for footing design.", 2);
+    // types
+    const types = {};
+    D.cols.forEach(c => c.res && c.res.des.forEach(d => { const k = `${c.res.b}|${d.nb}|${d.phi}`; (types[k] = types[k] || []).push(c.name); }));
+    let tx = 220, ty = 26;
+    inner += T(tx, 22, "TYPICAL SECTIONS", 2.8, { b: 1 });
+    Object.entries(types).slice(0, 16).forEach(([k, names], n) => {
+      const [b, nb, phi] = k.split("|").map(Number);
+      const x = tx + (n % 4) * 46, y = ty + Math.floor(n / 4) * 56;
+      inner += colSection(x, y, b, nb, phi) + T(x, y + b * 0.09 + 4, `${b}×${b} · ${nb}H${phi}`, 2.1, { b: 1 }) + T(x, y + b * 0.09 + 7.5, [...new Set(names)].join(", ").slice(0, 34), 1.7);
+    });
+    inner += T(14, 263, "Bars continuous through floors with 40Ø laps above slab level; links at 0.6× spacing within 400 of beams and over laps; kicker 75; cover 30 to links.", 2);
+    return [{ title: "Column schedule", body: inner }];
+  }
+
+  function slabSchedule(P, D) {
+    const rows = [];
+    for (const L of D.levels) for (const p of L.panels) {
+      if (!p.d) { rows.push({ cells: [p.mark, L.lvl.name, "", "", p.cls, "", "", "", "REVISE"], col: [0, 0, 0, 0, 0, 0, 0, 0, "#b00020"] }); continue; }
+      const R = p.d.rows;
+      const bx = p.kind === "cant" ? R.sxp : (p.shortAlongX ? R.sxp : R.syp), by = p.kind === "cant" ? R.syp : (p.shortAlongX ? R.syp : R.sxp);
+      const top = p.kind === "cant" ? R.sxn : [R.sxn, R.syn].filter(x => x && x.bars).sort((a, b) => b.bars.A - a.bars.A)[0];
+      rows.push({ cells: [p.mark, L.lvl.name, `${p.Lx.toFixed(2)}×${p.Ly.toFixed(2)}`, String(p.d.h), p.cls.slice(0, 62), SD.st(bx.bars), SD.st(by.bars), top ? SD.st(top.bars) : "–", p.status],
+                  col: [null, null, null, null, null, null, null, null, stc(p.status)], bold: [1] });
+    }
+    const cols = [["Mark", 16], ["Level", 28], ["Lx×Ly (m)", 22], ["h", 10], ["Classification", 112], ["Bottom ↔", 24], ["Bottom ↕", 24], ["Top", 24], ["Status", 16]];
+    const inner = T(14, 17, "SLAB SCHEDULE", 4.2, { b: 1 }) + table(14, 24, cols, rows.slice(0, 50)) +
+      T(14, 263, "↔ bars span left–right on plan, ↕ bars span up–down. Short-span bars in the outer layer. Two-way coefficients: BS 8110 Table 3.14 / 3.13; one-way: Table 3.12.", 2);
+    return [{ title: "Slab schedule", body: inner }];
+  }
+
+  function details(P, D) {
+    const o = [T(14, 17, "TYPICAL REINFORCEMENT DETAILS & GENERAL NOTES", 4.2, { b: 1 })];
+    // beam elevation
+    const x0 = 20, y0 = 40, L = 160, h = 28;
+    o.push(T(x0, 32, "TYPICAL CONTINUOUS BEAM", 2.8, { b: 1 }));
+    o.push(Rc(x0, y0, L, h, "#f4f1ea", "#000", 0.35), Rc(x0, y0, L, 6, "#e2dccf", "#000", 0.2));
+    [x0, x0 + L / 2, x0 + L].forEach(x => o.push(Rc(x - 3, y0 + h, 6, 10, "#777", "none")));
+    o.push(Ln(x0 + 2, y0 + h - 3, x0 + L - 2, y0 + h - 3, 0.7, "#c00"), T(x0 + L / 4, y0 + h - 4.5, "bottom bars – full span, lap 40Ø at supports", 2, { a: "middle", c: "#c00" }));
+    o.push(Ln(x0 + L / 2 - 0.3 * L / 2, y0 + 3, x0 + L / 2 + 0.3 * L / 2, y0 + 3, 0.7, "#03c"), T(x0 + L / 2, y0 - 1.2, "top bars ≥ 0.3 L each side of support", 2, { a: "middle", c: "#03c" }));
+    o.push(Ln(x0 + 2, y0 + 3, x0 + 0.25 * L / 2, y0 + 3, 0.7, "#03c"), T(x0 + 2, y0 - 1.2, "end top bars ≥ 0.25 L", 2, { c: "#03c" }));
+    for (let k = 1; k < 40; k++) { const x = x0 + k * L / 40; o.push(Ln(x, y0 + 1.5, x, y0 + h - 1.5, 0.15, "#666")); }
+    o.push(T(x0, y0 + h + 15, "Links: 2-leg closed H8 (shape code 51), first link 50 mm from column face; spacing per schedule.", 2));
+    o.push(T(x0, y0 + h + 19, "Hangers 2H12 where no top bars are scheduled; side bars 2H12 per face for beams ≥ 600 deep.", 2));
+    // slab edge / cantilever
+    const sx = 210, sy = 40;
+    o.push(T(sx, 32, "CANTILEVER BALCONY / SLAB EDGE", 2.8, { b: 1 }));
+    o.push(`<path d="M${sx},${sy} L${sx + 70},${sy} L${sx + 70},${sy + 6} L${sx + 120},${sy + 6} L${sx + 120},${sy + 10} L${sx},${sy + 10} Z" fill="#f4f1ea" stroke="#000" stroke-width="0.3"/>`);
+    o.push(Rc(sx + 60, sy + 10, 10, 18, "#f4f1ea", "#000", 0.3));
+    o.push(Ln(sx + 5, sy + 2, sx + 118, sy + 2, 0.7, "#03c"), T(sx + 30, sy - 1.5, "cantilever top bars – anchor ≥ 1.5 × projection into slab", 2, { a: "middle", c: "#03c" }));
+    o.push(Ln(sx + 2, sy + 8.5, sx + 118, sy + 8.5, 0.5, "#c00"), T(sx + 95, sy + 15, "fall 1:60 away from door", 2, { a: "middle" }));
+    // general notes
+    const gn = [
+      "GENERAL NOTES",
+      `1. Design to ${P.code === "EC2" ? "BS EN 1990, BS EN 1991-1-1 and BS EN 1992-1-1 with UK NA values" : "BS 8110-1:1997 (Amd 3) and BS 6399"}.`,
+      `2. Concrete C${P.code === "EC2" ? P.mat.fck : P.mat.fcu}${P.code === "EC2" ? "/" + (P.mat.fck + 5) : ""}, max aggregate 20 mm, slump 75–100 mm, cure 7 days minimum.`,
+      `3. Reinforcement high-yield B${P.code === "EC2" ? P.mat.fyk : P.mat.fy} (H/Y) to BS 4449 / KS EAS 412, bent to BS 8666.`,
+      `4. Nominal cover: slabs ${P.mat.cs} mm (roof/balconies 30–35), beams and columns ${P.mat.cb} mm to links.`,
+      "5. Laps 40Ø in tension, staggered; no laps at points of maximum moment.",
+      "6. Slab props to remain until concrete reaches 70% of design strength (min. 14 days for spans > 4 m).",
+      "7. Columns are placed in walls — confirm against openings on every floor before casting.",
+      "8. Foundations, stairs and ground slab designed separately using the loads on the column schedule.",
+      "9. This design was generated with StructDesign and must be checked and signed by a registered engineer.",
+    ];
+    let y = 120;
+    gn.forEach((t, i) => { o.push(T(20, y, t, i ? 2.3 : 2.9, { b: !i })); y += i ? 5.2 : 6.5; });
+    // design basis
+    const C = D.C;
+    const bl = ["DESIGN BASIS", `Load factors: ${C.gG}G + ${C.gQ}Q (pattern: ${C.gGmin}G on unloaded spans)`, `K′ = ${C.Kp}; fyd = ${C.fyd.toFixed(0)} MPa; concrete design stress ${C.fcd.toFixed(1)} MPa`,
+      `Columns: braced, effective length factor ${P.beta}; min. size ${P.colMin} mm`, `Max. beam span before an extra column is proposed: ${(P.maxSpan / 1000).toFixed(1)} m`];
+    y = 120; bl.forEach((t, i) => { o.push(T(230, y, t, i ? 2.3 : 2.9, { b: !i })); y += i ? 5.2 : 6.5; });
+    y += 4; o.push(T(230, y, "LEVELS AND LOADS", 2.9, { b: 1 })); y += 6.5;
+    P.levels.forEach(l => { o.push(T(230, y, `${l.name}: slab ${l.h}, finishes ${l.fin}, partitions ${l.part}, qk ${l.qk} kN/m², storey ${l.H} m`, 2.2)); y += 5; });
+    return [{ title: "Typical details & notes", body: o.join("") }];
+  }
+
+  function all(P, D) {
+    const sheets = [];
+    D.levels.forEach(L => sheets.push({ title: `${L.lvl.name} framing plan`, svgFn: (no) => framing(P, D, L, no) }));
+    if (typeof SECTIONS !== "undefined") for (const s of SECTIONS.extra(P, D)) sheets.push({ title: s.title, svgFn: (no) => frame(P, s.title, no, s.body, "NTS") });
+    for (const s of beamSchedule(P, D).concat(slabSchedule(P, D), columnSchedule(P, D), details(P, D)))
+      sheets.push({ title: s.title, svgFn: (no) => frame(P, s.title, no, s.body, "NTS") });
+    return sheets.map((s, i) => ({ title: s.title, no: `S-${String(i + 1).padStart(2, "0")}`, svg: s.svgFn(`S-${String(i + 1).padStart(2, "0")}`) }));
+  }
+  return { all, letters };
+})();
+if (typeof module !== "undefined") module.exports = SHEETS;
+
+/* Building sections, beam reinforcement elevations, member cross-sections and 3D isometric sheet */
+const SECTIONS = (() => {
+  const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const n2 = x => x.toFixed(2);
+  const T = (x, y, s, sz = 2.4, o = {}) => `<text x="${n2(x)}" y="${n2(y)}" font-size="${sz}" font-family="Arial,Helvetica,sans-serif"${o.a ? ` text-anchor="${o.a}"` : ""}${o.b ? ` font-weight="bold"` : ""}${o.c ? ` fill="${o.c}"` : ""}${o.r ? ` transform="rotate(${o.r} ${n2(x)} ${n2(y)})"` : ""}>${esc(s)}</text>`;
+  const Ln = (x1, y1, x2, y2, w = 0.25, c = "#000", d) => `<line x1="${n2(x1)}" y1="${n2(y1)}" x2="${n2(x2)}" y2="${n2(y2)}" stroke="${c}" stroke-width="${w}"${d ? ` stroke-dasharray="${d}"` : ""}/>`;
+  const Rc = (x, y, w, h, f = "none", s = "#000", sw = 0.25, ex = "") => `<rect x="${n2(x)}" y="${n2(y)}" width="${n2(Math.max(w, 0))}" height="${n2(Math.max(h, 0))}" fill="${f}" stroke="${s}" stroke-width="${sw}" ${ex}/>`;
+  const L = i => SHEETS.letters(i);
+  const HATCH = `<defs><pattern id="ht" width="1.6" height="1.6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="1.6" stroke="#777" stroke-width="0.25"/></pattern>
+    <pattern id="earth" width="3" height="3" patternUnits="userSpaceOnUse"><path d="M0,3 L3,0" stroke="#8a7a5a" stroke-width="0.3"/></pattern></defs>`;
+
+  function levelsZ(P) { let z = 0; return P.levels.map(l => (z += l.H)); }
+
+  // ------------------------------------------------------------ building section along a grid line
+  function section(P, D, dir, line, ox, oy, w, h, label) {
+    // dir "x": cut along y-grid line `line`, horizontal axis = x ; dir "y": cut along x-grid line, axis = y
+    const ax = dir === "x" ? P.gx : P.gy;
+    const zs = levelsZ(P), ztop = zs[zs.length - 1];
+    const a0 = ax[0], a1 = ax[ax.length - 1];
+    const sc = Math.min((w - 40) / (a1 - a0), (h - 30) / (ztop * 1000 + 2300));
+    const X = a => ox + 26 + (a - a0) * sc, Z = z => oy + 6 + (ztop * 1000 + 1100 - z) * sc;
+    const o = [];
+    o.push(T(ox, oy + 1, label, 3.2, { b: 1 }));
+    // ground & foundations
+    o.push(Rc(X(a0) - 8, Z(-150), (a1 - a0) * sc + 16, 1100 * sc, "url(#earth)", "none"));
+    o.push(Ln(X(a0) - 8, Z(-150), X(a1) + 8, Z(-150), 0.5));
+    // ground floor slab
+    o.push(Rc(X(a0), Z(0), (a1 - a0) * sc, 150 * sc, "#ddd", "#000", 0.25));
+    const cols = D.cols.filter(c => (dir === "x" ? c.j : c.i) === line && c.res);
+    for (const c of cols) {
+      const pos = dir === "x" ? P.gx[c.i] : P.gy[c.j], b = c.res.b;
+      o.push(Rc(X(pos) - 600 * sc, Z(-1200), 1200 * sc, 400 * sc, "#cfcfcf", "#000", 0.3));
+      o.push(Rc(X(pos) - b / 2 * sc, Z(ztop * 1000), b * sc, (ztop * 1000 + 800) * sc, "url(#ht)", "#000", 0.3));
+      o.push(T(X(pos), Z(-1200) + 3.6, c.name, 1.9, { a: "middle", b: 1, c: "#b00020" }));
+    }
+    // levels
+    D.levels.forEach((Lv, li) => {
+      const zt = zs[li] * 1000, PL = Lv.P || P;
+      // slab band where a slab cell is on either side of the line
+      for (let k = 0; k + 1 < ax.length; k++) {
+        const t1 = dir === "x" ? SD.cellT(PL, k, line - 1) : SD.cellT(PL, line - 1, k), t2 = dir === "x" ? SD.cellT(PL, k, line) : SD.cellT(PL, line, k);
+        if (t1 === "slab" || t2 === "slab" || t1 === "balcony" || t2 === "balcony") o.push(Rc(X(ax[k]), Z(zt), (ax[k + 1] - ax[k]) * sc, Lv.lvl.h * sc, "#c9c9c9", "#000", 0.2));
+      }
+      // beams on this line
+      for (const r of Lv.runs) {
+        if (!r.des) continue;
+        if (r.dir === (dir === "x" ? "h" : "v") && r.line === line) {
+          const x0 = X(ax[r.a]), x1 = X(ax[r.b]), dh = r.des.h * sc;
+          o.push(Rc(x0, Z(zt), x1 - x0, dh, "#e8e2d4", "#000", 0.35));
+          o.push(T((x0 + x1) / 2, Z(zt) + dh + 2.6, `${r.mark} ${r.des.bw}×${r.des.h}`, 1.9, { a: "middle", b: 1 }));
+        }
+        // perpendicular beams cut by the section plane
+        if (r.dir === (dir === "x" ? "v" : "h") && r.a <= line && line <= r.b && !(r.a === line || r.b === line)) {
+          const pos = ax[r.line];
+          o.push(Rc(X(pos) - r.des.bw / 2 * sc, Z(zt), r.des.bw * sc, r.des.h * sc, "#555", "#000", 0.2));
+        }
+        if (r.dir === (dir === "x" ? "v" : "h") && (r.a === line || r.b === line)) {
+          const pos = ax[r.line];
+          o.push(Rc(X(pos) - r.des.bw / 2 * sc, Z(zt), r.des.bw * sc, r.des.h * sc, "#555", "#000", 0.2));
+        }
+      }
+      // parapet at roof
+      if (Lv.lvl.kind === "roof" && cols.length) {
+        const ps = cols.map(c => dir === "x" ? P.gx[c.i] : P.gy[c.j]), e0 = Math.min(...ps), e1 = Math.max(...ps);
+        for (const e of [e0, e1]) o.push(Rc(X(e) - 100 * sc, Z(zt + 900), 200 * sc, 900 * sc, "#e8e2d4", "#000", 0.25));
+      }
+      // level marker
+      o.push(Ln(X(a0) - 20, Z(zt), X(a0) - 4, Z(zt), 0.2), T(X(a0) - 20, Z(zt) - 0.8, `${Lv.lvl.name} +${zs[li].toFixed(3)}`, 1.9));
+    });
+    o.push(Ln(X(a0) - 20, Z(0), X(a0) - 4, Z(0), 0.2), T(X(a0) - 20, Z(0) - 0.8, "GF ±0.000", 1.9), T(X(a0) - 20, Z(-150) + 2.6, "NGL", 1.8));
+    // storey dims
+    let zp = 0; zs.forEach((z, i) => { const zz = z * 1000; o.push(Ln(X(a0) - 6, Z(zp), X(a0) - 6, Z(zz), 0.2), T(X(a0) - 7, (Z(zp) + Z(zz)) / 2, `${(P.levels[i].H * 1000).toFixed(0)}`, 1.8, { a: "middle", r: -90 })); zp = zz; });
+    // grid bubbles
+    ax.forEach((v, k) => { o.push(Ln(X(v), Z(-1200) + 5, X(v), Z(-1200) + 8, 0.15, "#888"), `<circle cx="${n2(X(v))}" cy="${n2(Z(-1200) + 11)}" r="2.6" fill="#fff" stroke="#000" stroke-width="0.25"/>`, T(X(v), Z(-1200) + 12, dir === "x" ? L(k) : String(k + 1), 2.3, { a: "middle", b: 1 })); });
+    return o.join("");
+  }
+  function bestLine(P, D, dir) {
+    const n = dir === "x" ? P.gy.length : P.gx.length; let best = 0, bc = -1;
+    for (let k = 1; k < n - 1; k++) { const c = D.cols.filter(c => (dir === "x" ? c.j : c.i) === k).length; if (c > bc) { bc = c; best = k; } }
+    return n > 2 ? best : 0;
+  }
+  function sectionsSheet(P, D) {
+    const jx = bestLine(P, D, "x"), iy = bestLine(P, D, "y");
+    const body = HATCH + section(P, D, "x", jx, 14, 14, 395, 122, `SECTION A–A (along grid line ${jx + 1})`) + section(P, D, "y", iy, 14, 140, 395, 122, `SECTION B–B (along grid line ${L(iy)})`);
+    return { title: "Building sections", body };
+  }
+
+  // ------------------------------------------------------------ cross-section helper (mm on paper)
+  function xsec(x, y, bw, h, hf, top, bot, link, sc) {
+    const o = [];
+    const W = bw * sc, H = h * sc, c = 38 * sc;
+    if (hf) o.push(Rc(x - W, y, W * 3, hf * sc, "#ece7da", "none"));
+    o.push(Rc(x, y, W, H, "#f4f1ea", "#000", 0.3));
+    if (hf) { o.push(Ln(x - W, y, x + 2 * W, y, 0.3), Ln(x - W, y + hf * sc, x, y + hf * sc, 0.3), Ln(x + W, y + hf * sc, x + 2 * W, y + hf * sc, 0.3)); }
+    o.push(Rc(x + c, y + c, W - 2 * c, H - 2 * c, "none", "#555", 0.2, 'rx="0.6"'));
+    const row = (n, d, yy) => { const r = Math.max(d / 2 * sc, 0.45); for (let k = 0; k < n; k++) { const xx = x + c + r + 0.2 + k * (W - 2 * c - 2 * r - 0.4) / Math.max(n - 1, 1); o.push(`<circle cx="${n2(xx)}" cy="${n2(yy)}" r="${n2(r)}" fill="#c00"/>`); } };
+    row(top.n, top.d, y + c + top.d / 2 * sc + 0.2); row(bot.n, bot.d, y + H - c - bot.d / 2 * sc - 0.2);
+    return o.join("");
+  }
+
+  // ------------------------------------------------------------ beam reinforcement elevations
+  function beamElevations(P, D) {
+    const items = [];
+    for (const Lv of D.levels) for (const r of Lv.runs) if (r.des) items.push({ Lv, r });
+    const per = 6, sheets = [];
+    for (let s = 0; s * per < items.length; s++) {
+      const o = [HATCH, T(14, 17, `BEAM REINFORCEMENT DETAILS${items.length > per ? ` (${s + 1} of ${Math.ceil(items.length / per)})` : ""}`, 4.2, { b: 1 })];
+      items.slice(s * per, (s + 1) * per).forEach(({ Lv, r }, k) => {
+        const y0 = 26 + k * 40, x0 = 22, Wd = 300, D_ = r.des, Hh = 12;
+        const pa = r.dir === "h" ? P.gx : P.gy, a0 = pa[r.a], a1 = pa[r.b], sc = Wd / (a1 - a0);
+        const X = v => x0 + (v - a0) * sc;
+        o.push(T(x0 - 8, y0 + 1, `${r.mark}`, 3, { b: 1 }), T(x0 + 14, y0 + 1, `${Lv.lvl.name} · ${r.type} · ${D_.bw}×${D_.h} · grid ${r.dir === "h" ? (r.line + 1) : L(r.line)}`, 2.1));
+        const yb = y0 + 4;
+        o.push(Rc(x0, yb, Wd, Hh, "#f4f1ea", "#000", 0.3), Rc(x0, yb, Wd, Hh * Lv.lvl.h / D_.h, "#e2dccf", "none"));
+        // supports
+        for (const sp of r.sup) {
+          const xp = X(pa[sp.k]);
+          if (sp.type === "col") o.push(Rc(xp - 1.4, yb + Hh, 2.8, 5, "url(#ht)", "#000", 0.25), Rc(xp - 1.4, yb - 3, 2.8, 3, "url(#ht)", "#000", 0.25));
+          else o.push(`<path d="M${n2(xp)},${n2(yb + Hh)} l-1.6,3 h3.2 z" fill="#555"/>`);
+          o.push(T(xp, yb + Hh + 8, sp.type === "col" ? (D.colName[sp.node] || "") : "beam", 1.7, { a: "middle", c: "#b00020" }));
+        }
+        // bars per element
+        r.el.forEach((e, i) => {
+          const s0 = D_.spans[i], xa = X(pa[e.k0]), xb = X(pa[e.k1]), Lp = xb - xa;
+          o.push(Ln(xa + 0.6, yb + Hh - 1.4, xb - 0.6, yb + Hh - 1.4, 0.6, "#c00"));
+          o.push(T((xa + xb) / 2, yb + Hh - 2.2, `${SD.bt(s0.bot)} B`, 1.8, { a: "middle", c: "#c00" }));
+          const tl = e.kind === "cantL" ? [xa, xb] : [xa, xa + 0.3 * Lp], tr = e.kind === "cantR" ? [xa, xb] : [xb - 0.3 * Lp, xb];
+          if (e.kind !== "cantR") { o.push(Ln(tl[0] + 0.4, yb + 1.4, tl[1], yb + 1.4, 0.6, "#03c")); o.push(T(tl[0] + 0.15 * Lp + 0.5, yb - 0.6, `${SD.bt(s0.topL)} T`, 1.7, { a: "middle", c: "#03c" })); }
+          if (e.kind !== "cantL") { o.push(Ln(tr[0], yb + 1.4, tr[1] - 0.4, yb + 1.4, 0.6, "#03c")); o.push(T(tr[1] - 0.15 * Lp - 0.5, yb - 0.6, `${SD.bt(s0.topR)} T`, 1.7, { a: "middle", c: "#03c" })); }
+          o.push(Ln(xa, yb + 2.6, xb, yb + 2.6, 0.12, "#03c", "1 0.6"));
+          const nl = Math.min(40, Math.round(e.L * 1000 / s0.links.s));
+          for (let q = 1; q < nl; q++) { const xx = xa + q * Lp / nl; o.push(Ln(xx, yb + 1, xx, yb + Hh - 1, 0.1, "#777")); }
+          o.push(Ln(xa, yb + Hh + 10.5, xb, yb + Hh + 10.5, 0.15), Ln(xa, yb + Hh + 9.5, xa, yb + Hh + 11.5, 0.15), Ln(xb, yb + Hh + 9.5, xb, yb + Hh + 11.5, 0.15));
+          o.push(T((xa + xb) / 2, yb + Hh + 10, `${(e.L * 1000).toFixed(0)} · H8@${s0.links.s}`, 1.7, { a: "middle" }));
+        });
+        // cross sections
+        const big = D_.spans.reduce((m, s1) => s1.Mpos > m.Mpos ? s1 : m, D_.spans[0]);
+        const sup = D_.spans.reduce((m, s1) => Math.max(s1.MnL, s1.MnR) > Math.max(m.MnL, m.MnR) ? s1 : m, D_.spans[0]);
+        const topS = sup.topL.A >= sup.topR.A ? sup.topL : sup.topR;
+        const sc2 = 26 / Math.max(D_.h, 450);
+        const hf = r.type !== "Rectangular" ? Lv.lvl.h : 0;
+        o.push(xsec(345, y0 + 4, D_.bw, D_.h, hf, { n: 2, d: 12 }, big.bot, 8, sc2), T(345 + D_.bw * sc2 / 2, y0 + 4 + D_.h * sc2 + 3, "midspan", 1.7, { a: "middle" }));
+        o.push(xsec(380, y0 + 4, D_.bw, D_.h, hf, topS, { n: Math.max(2, big.bot.n), d: big.bot.d }, 8, sc2), T(380 + D_.bw * sc2 / 2, y0 + 4 + D_.h * sc2 + 3, "support", 1.7, { a: "middle" }));
+        o.push(Ln(14, y0 + 37, 412, y0 + 37, 0.1, "#bbb"));
+      });
+      o.push(T(14, 264, "Top bars extend 0.3 L from each support face (full length on cantilevers); bottom bars full span, lapped 40Ø at supports; links H8 2-leg closed, first link 50 from face. Vertical scale exaggerated.", 1.9));
+      sheets.push({ title: "Beam reinforcement details" + (items.length > per ? ` ${s + 1}` : ""), body: o.join("") });
+    }
+    return sheets;
+  }
+
+  // ------------------------------------------------------------ 3D isometric (vector)
+  function boxes(P, D) {
+    const B = [], zs = levelsZ(P).map(z => z * 1000);
+    const top = zs[zs.length - 1];
+    for (const c of D.cols) if (c.res) { const b = c.res.b; B.push({ x0: c.x - b / 2, x1: c.x + b / 2, y0: c.y - b / 2, y1: c.y + b / 2, z0: 0, z1: top, col: [120, 120, 125], kind: "col" }); }
+    D.levels.forEach((Lv, li) => {
+      const zt = zs[li], PL = Lv.P || P;
+      for (const r of Lv.runs) if (r.des) {
+        const bw = r.des.bw, h = r.des.h;
+        if (r.dir === "h") B.push({ x0: P.gx[r.a], x1: P.gx[r.b], y0: P.gy[r.line] - bw / 2, y1: P.gy[r.line] + bw / 2, z0: zt - h, z1: zt - Lv.lvl.h, col: [196, 160, 110], kind: "beam" });
+        else B.push({ x0: P.gx[r.line] - bw / 2, x1: P.gx[r.line] + bw / 2, y0: P.gy[r.a], y1: P.gy[r.b], z0: zt - h, z1: zt - Lv.lvl.h, col: [196, 160, 110], kind: "beam" });
+      }
+      for (const p of Lv.panels) if (p.d) B.push({ x0: p.x0, x1: p.x1, y0: p.y0, y1: p.y1, z0: zt - p.d.h, z1: zt, col: p.kind === "cant" ? [150, 140, 220] : [170, 195, 225], kind: "slab", op: 0.92 });
+    });
+    return B;
+  }
+  function iso(P, D, ox, oy, w, h) {
+    const B = boxes(P, D);
+    const c30 = Math.cos(Math.PI / 6), s30 = 0.5;
+    const pr = (x, y, z) => [(x - y) * c30, (x + y) * s30 - z];
+    let mnx = 1e9, mxx = -1e9, mny = 1e9, mxy = -1e9;
+    for (const b of B) for (const x of [b.x0, b.x1]) for (const y of [b.y0, b.y1]) for (const z of [b.z0, b.z1]) { const [u, v] = pr(x, y, z); mnx = Math.min(mnx, u); mxx = Math.max(mxx, u); mny = Math.min(mny, v); mxy = Math.max(mxy, v); }
+    const sc = Math.min(w / (mxx - mnx), h / (mxy - mny));
+    const S = (x, y, z) => { const [u, v] = pr(x, y, z); return [ox + (u - mnx) * sc + (w - (mxx - mnx) * sc) / 2, oy + (v - mny) * sc]; };
+    // painter: far first (smaller x+y), lower first
+    B.sort((a, b) => ((a.x0 + a.x1 + a.y0 + a.y1) / 2 - (b.x0 + b.x1 + b.y0 + b.y1) / 2) || (a.z0 - b.z0));
+    B.sort((a, b) => (a.kind === "slab") - (b.kind === "slab") || 0);
+    const items = B.map(b => ({ b, d: (b.x1 + b.y1) + b.z1 * 0.2 }));
+    items.sort((a, c) => a.d - c.d);
+    const o = [];
+    const poly = (pts, rgb, f, op = 1) => `<polygon points="${pts.map(p => p.map(n2).join(",")).join(" ")}" fill="rgb(${rgb.map(v => Math.round(v * f)).join(",")})" fill-opacity="${op}" stroke="#333" stroke-width="0.12"/>`;
+    for (const { b } of items) {
+      const { x0, x1, y0, y1, z0, z1, col } = b, op = b.op || 1;
+      o.push(poly([S(x0, y1, z0), S(x1, y1, z0), S(x1, y1, z1), S(x0, y1, z1)], col, 0.78, op)); // front (y1)
+      o.push(poly([S(x1, y0, z0), S(x1, y1, z0), S(x1, y1, z1), S(x1, y0, z1)], col, 0.62, op)); // right (x1)
+      o.push(poly([S(x0, y0, z1), S(x1, y0, z1), S(x1, y1, z1), S(x0, y1, z1)], col, 1.0, op)); // top
+    }
+    return o.join("");
+  }
+  function iso3dSheet(P, D) {
+    const body = T(14, 17, "3D VIEW OF THE STRUCTURAL FRAME (isometric)", 4.2, { b: 1 }) + iso(P, D, 20, 26, 300, 232) +
+      Rc(330, 30, 78, 50, "#fff", "#999", 0.2) + T(334, 37, "LEGEND", 2.6, { b: 1 }) +
+      Rc(334, 41, 8, 4, "rgb(120,120,125)", "#333", 0.15) + T(345, 44.2, "columns", 2.1) +
+      Rc(334, 48, 8, 4, "rgb(196,160,110)", "#333", 0.15) + T(345, 51.2, "beams (downstand)", 2.1) +
+      Rc(334, 55, 8, 4, "rgb(170,195,225)", "#333", 0.15) + T(345, 58.2, "slabs", 2.1) +
+      Rc(334, 62, 8, 4, "rgb(150,140,220)", "#333", 0.15) + T(345, 65.2, "cantilever balconies", 2.1) +
+      T(334, 74, "Foundations and stairs not shown.", 1.8) + T(334, 77.5, "Interactive 3D in the app (tab 6).", 1.8);
+    return { title: "3D view", body };
+  }
+
+  // ------------------------------------------------------------ slab sections
+  function slabSections(P, D) {
+    const o = [HATCH, T(14, 17, "SLAB AND CANTILEVER SECTIONS", 4.2, { b: 1 })];
+    const list = [];
+    for (const Lv of D.levels) for (const p of Lv.panels) if (p.d) list.push({ Lv, p });
+    const pick = list.filter(x => x.p.kind !== "cant").slice(0, 4).concat(list.filter(x => x.p.kind === "cant").slice(0, 2));
+    pick.forEach(({ Lv, p }, k) => {
+      const x0 = 20 + (k % 2) * 200, y0 = 32 + Math.floor(k / 2) * 76, R = p.d.rows, h = p.d.h;
+      const sc = 0.035, len = 160, H = Math.max(h * sc * 4, 6);
+      o.push(T(x0, y0 - 4, `${p.mark} (${Lv.lvl.name}) — ${p.cls}`.slice(0, 80), 2.2, { b: 1 }));
+      if (p.kind === "cant") {
+        o.push(Rc(x0, y0, len * 0.6, H, "#f4f1ea", "#000", 0.3), `<path d="M${x0 + len * 0.6},${y0} L${x0 + len},${y0} L${x0 + len},${y0 + H * 0.75} L${x0 + len * 0.6},${y0 + H} Z" fill="#f4f1ea" stroke="#000" stroke-width="0.3"/>`);
+        o.push(Rc(x0 + len * 0.6 - 6, y0 + H, 12, 18, "url(#ht)", "#000", 0.3));
+        o.push(Ln(x0 + 6, y0 + 1.2, x0 + len - 1.5, y0 + 1.2, 0.6, "#03c"), T(x0 + len * 0.4, y0 - 0.8, `T ${SD.st(R.sxn.bars)} (anchor ≥ 1.5×${p.Lc.toFixed(2)} m)`, 1.9, { a: "middle", c: "#03c" }));
+        o.push(Ln(x0 + 2, y0 + H - 1.2, x0 + len - 2, y0 + H * 0.75 - 1.2, 0.4, "#c00"), T(x0 + len * 0.8, y0 + H + 4, `B ${SD.st(R.syp.bars)} · dist. ${SD.st(R.syn.bars)} · h = ${h}→150`, 1.9, { a: "middle", c: "#c00" }));
+      } else {
+        o.push(Rc(x0, y0, len, H, "#f4f1ea", "#000", 0.3));
+        [0, len].forEach(xx => o.push(Rc(x0 + xx - 4, y0 + H, 8, 14, "url(#ht)", "#000", 0.3)));
+        const main = p.shortAlongX !== false ? R.sxp : R.syp;
+        o.push(Ln(x0 + 1.5, y0 + H - 1.2, x0 + len - 1.5, y0 + H - 1.2, 0.6, "#c00"), T(x0 + len / 2, y0 + H + 4, `B ${SD.st(R.sxp.bars)} (short span) · ${SD.st(R.syp.bars)} (long span) · h = ${h}`, 1.9, { a: "middle", c: "#c00" }));
+        const top = [R.sxn, R.syn].filter(x => x && x.bars).sort((a, b) => b.bars.A - a.bars.A)[0];
+        const tl = 0.3 * len;
+        o.push(Ln(x0 - 6, y0 + 1.2, x0 + tl, y0 + 1.2, 0.6, "#03c"), Ln(x0 + len - tl, y0 + 1.2, x0 + len + 6, y0 + 1.2, 0.6, "#03c"));
+        if (top) o.push(T(x0 + len / 2, y0 - 0.8, `T ${SD.st(top.bars)} over supports, 0.3 lx each side`, 1.9, { a: "middle", c: "#03c" }));
+        o.push(T(x0 + len / 2, y0 + H + 22, `lx = ${p.lx.toFixed(2)} m · cover ${P.mat.cs} mm`, 1.8, { a: "middle" }));
+      }
+    });
+    // column section with laps
+    o.push(T(20, 262, "Short-span bars in the outer layer. At discontinuous edges provide top bars ≥ 50% of midspan steel over 0.15 lx. Vertical scale exaggerated.", 1.9));
+    return { title: "Slab sections", body: o.join("") };
+  }
+
+  function extra(P, D) {
+    return [sectionsSheet(P, D), ...beamElevations(P, D), slabSections(P, D), iso3dSheet(P, D)];
+  }
+  return { extra, boxes, levelsZ };
+})();
+if (typeof module !== "undefined") module.exports = SECTIONS;
+
+/* Calculation sheets: step-by-step workings for every slab, beam and column.
+   Output is a list of blocks: {h:"Heading"} | {sub:"Sub-heading"} | {ref, txt, out, ok} */
+const CALC = (() => {
+  const f = (x, n = 2) => (x == null || !isFinite(x)) ? "–" : Number(x).toFixed(n);
+  const f0 = x => f(x, 0), f1 = x => f(x, 1), f3 = x => f(x, 3);
+  const st = SD.st, bt = SD.bt;
+
+  function basis(P, C) {
+    const ec = C.ec, B = [];
+    B.push({ h: "DESIGN BASIS" });
+    B.push({ ref: ec ? "BS EN 1990" : "BS 8110-1", txt: ec ? `Design to BS EN 1992-1-1 with UK National Annex values. ULS load combination eq. 6.10: ${C.gG}Gk + ${C.gQ}Qk; pattern loading ${C.gGmin}Gk on unloaded spans.` : `Design to BS 8110-1:1997 (Amd 3). Load factors ${C.gG}Gk + ${C.gQ}Qk; ${C.gGmin}Gk on unloaded spans.`, out: "" });
+    if (ec) {
+      B.push({ ref: "3.1.6", txt: `Concrete C${P.mat.fck}: fcd = αcc fck/γc = 0.85 × ${P.mat.fck}/1.5`, out: `fcd = ${f(C.fcd)} MPa` });
+      B.push({ ref: "3.1.2", txt: `fctm = 0.3 fck^(2/3) = 0.3 × ${P.mat.fck}^(2/3)`, out: `fctm = ${f(C.fctm)} MPa` });
+      B.push({ ref: "3.2.7", txt: `Reinforcement B${P.mat.fyk}: fyd = fyk/γs = ${P.mat.fyk}/1.15`, out: `fyd = ${f1(C.fyd)} MPa` });
+      B.push({ ref: "5.5", txt: "Limit for singly reinforced section without redistribution", out: "K′ = 0.167" });
+    } else {
+      B.push({ ref: "3.4.4.4", txt: `Concrete fcu = ${P.mat.fcu} MPa; stress block 0.45 fcu over 0.9x`, out: `0.45fcu = ${f(C.fcd)} MPa` });
+      B.push({ ref: "2.4.4.1", txt: `Reinforcement fy = ${P.mat.fy} MPa, γm = 1.15 → 0.87fy`, out: `${f1(C.fyd)} MPa` });
+      B.push({ ref: "3.4.4.4", txt: "Limit for singly reinforced section (≤10% redistribution)", out: "K′ = 0.156" });
+    }
+    B.push({ ref: "4.4.1", txt: `Nominal cover: slabs ${P.mat.cs} mm (roof/balconies ≥ 30–35), beams and columns ${P.mat.cb} mm`, out: "" });
+    for (const l of P.levels) B.push({ ref: "", txt: `${l.name}: slab ${l.h} mm; finishes ${l.fin}, partitions ${l.part}, qk ${l.qk} kN/m²; walls on beams ${l.kind === "roof" ? `parapet ${l.ext}` : `ext ${l.ext} / int ${l.int}`} kN/m; storey ${l.H} m`, out: "" });
+    return B;
+  }
+
+  // ------------------------------------------------------------------ flexure lines (shared)
+  function flexLines(C, label, M, b, d, ref) {
+    const B = [];
+    if (M <= 0) { B.push({ ref, txt: `${label}: M = 0`, out: "nominal steel" }); return B; }
+    const r = SD.flex(C, M, b, d);
+    if (C.ec) {
+      B.push({ ref: ref || "6.1", txt: `${label}: K = M/(b d² fck) = ${f1(M)}×10⁶ / (${f0(b)} × ${f0(d)}² × ${C.fck})`, out: `K = ${f3(r.K)} ${r.K <= C.Kp ? "≤" : ">"} K′`, ok: r.K <= C.Kp });
+      B.push({ ref: "", txt: `z = d/2 [1 + √(1 − 3.53K)] ≤ 0.95d`, out: `z = ${f0(r.z)} mm` });
+      B.push({ ref: "", txt: `As = M/(fyd z) = ${f1(M)}×10⁶ / (${f1(C.fyd)} × ${f0(r.z)})`, out: `As,req = ${f0(r.As)} mm²` });
+    } else {
+      B.push({ ref: ref || "3.4.4.4", txt: `${label}: K = M/(b d² fcu) = ${f1(M)}×10⁶ / (${f0(b)} × ${f0(d)}² × ${C.fcu})`, out: `K = ${f3(r.K)} ${r.K <= C.Kp ? "≤" : ">"} K′`, ok: r.K <= C.Kp });
+      B.push({ ref: "", txt: `z = d[0.5 + √(0.25 − K/0.9)] ≤ 0.95d`, out: `z = ${f0(r.z)} mm` });
+      B.push({ ref: "", txt: `As = M/(0.87 fy z) = ${f1(M)}×10⁶ / (${f1(C.fyd)} × ${f0(r.z)})`, out: `As,req = ${f0(r.As)} mm²` });
+    }
+    return B;
+  }
+
+  // ------------------------------------------------------------------ slab
+  function slab(P, C, L, p) {
+    const B = [{ h: `SLAB ${p.mark} — ${L.lvl.name}` }];
+    const d = p.d;
+    if (!d) { B.push({ ref: "", txt: p.cls, out: "REVISE", ok: false }); return B; }
+    B.push({ sub: "Geometry and classification" });
+    B.push({ ref: "", txt: `Panel between grid lines: ${f(p.Lx)} m (x) × ${f(p.Ly)} m (y)` + (p.irregular ? " — irregular shape, designed on its bounding rectangle" : ""), out: "" });
+    if (p.kind === "cant") {
+      B.push({ ref: "", txt: `Supported on one edge (${p.supSide}); projection Lc = ${f(p.Lc)} m`, out: "CANTILEVER" });
+    } else {
+      B.push({ ref: "", txt: `lx = ${f(p.lx)} m, ly = ${f(p.ly)} m, ly/lx = ${f(p.ratio)} ${p.ratio > 2 ? "> 2 → spans one way" : "≤ 2 → spans two ways"}`, out: p.kind === "one" ? "ONE-WAY" : "TWO-WAY" });
+      const ed = s => p.sides[s].cont ? "continuous" : "discontinuous";
+      B.push({ ref: "", txt: `Edges: top ${ed("top")}, bottom ${ed("bottom")}, left ${ed("left")}, right ${ed("right")} → ${p.ns} short and ${p.nl} long edge(s) discontinuous`, out: p.simpleFlag ? "SIMPLE" : "CONTINUOUS" });
+      B.push({ ref: "", txt: `Classification: ${p.cls}`, out: "" });
+    }
+    B.push({ sub: "Loading" });
+    B.push({ ref: "", txt: `Self-weight ${d.h} mm × 25 kN/m³ = ${f(d.h / 1000 * 25)}; finishes ${L.lvl.fin}${p.kind === "cant" ? "" : `; partitions ${L.lvl.part}`} kN/m²`, out: `gk = ${f(d.gk)} kN/m²` });
+    B.push({ ref: "", txt: `Imposed load${p.kind === "cant" ? " (balcony, min 2.5)" : ""}`, out: `qk = ${f(d.qk)} kN/m²` });
+    B.push({ ref: C.ec ? "Eq 6.10" : "Table 2.1", txt: `n = ${C.gG} × ${f(d.gk)} + ${C.gQ} × ${f(d.qk)}`, out: `n = ${f(d.n)} kN/m²` });
+    B.push({ sub: "Design moments" });
+    const R = d.rows, lx = p.kind === "cant" ? p.Lc : p.lx;
+    if (p.kind === "cant") {
+      B.push({ ref: "", txt: `M = n Lc²/2 + ${C.gG}×${P.balu}×Lc (balustrade) + ${C.gQ}×0.74×1.1 (horizontal load) = ${f(d.n)}×${f(lx)}²/2 + …`, out: `M = ${f(R.sxn.M)} kNm/m` });
+    } else if (p.kind === "one") {
+      const cp = [0.125, 0.086, 0.063][p.pos1 - 1], cn = [0, 0.086, 0.063][p.pos1 - 1];
+      B.push({ ref: "Table 3.12", txt: `Span coefficient ${cp}, support coefficient ${cn} (${["single span", "end span", "interior span"][p.pos1 - 1]})`, out: "" });
+      B.push({ ref: "", txt: `M = coef × n × lx² = ${cp} × ${f(d.n)} × ${f(lx)}²`, out: `M+ = ${f(R.sxp.M)} kNm/m` });
+      if (cn) B.push({ ref: "", txt: `M− = ${cn} × ${f(d.n)} × ${f(lx)}²`, out: `M− = ${f(R.sxn.M)} kNm/m` });
+    } else if (p.simple) {
+      B.push({ ref: "Table 3.13", txt: `Simply supported: αsx = r⁴/[8(1+r⁴)], αsy = r²/[8(1+r⁴)], r = ${f(Math.min(p.ratio, 2))}`, out: "" });
+      B.push({ ref: "", txt: `Msx = αsx n lx² ; Msy = αsy n lx²`, out: `Msx = ${f(R.sxp.M)}, Msy = ${f(R.syp.M)} kNm/m` });
+    } else {
+      const c = p.case - 1, T = SD.T314;
+      B.push({ ref: "Table 3.14", txt: `Case ${p.case} (${T.names[c]}), ly/lx = ${f(p.ratio)}: βsx− = ${f3(SD.interp(p.ratio, T.neg[c]))}, βsx+ = ${f3(SD.interp(p.ratio, T.pos[c]))}, βsy− = ${f3(T.negL[c])}, βsy+ = ${f3(T.posL[c])}`, out: "" });
+      B.push({ ref: "", txt: `M = β n lx² with n lx² = ${f(d.n)} × ${f(lx)}² = ${f(d.n * lx * lx)}`, out: `Msx+ ${f(R.sxp.M)} · Msx− ${f(R.sxn.M)} · Msy+ ${f(R.syp.M)} · Msy− ${f(R.syn.M)}` });
+    }
+    B.push({ sub: "Reinforcement (per metre width)" });
+    B.push({ ref: "", txt: `d (outer layer) = h − c − Ø/2 = ${d.h} − ${C.ec || true ? (d.h - d.d1 - 5) : ""} − 5`, out: `dx = ${d.d1} mm, dy = ${d.d2} mm` });
+    const names = { sxp: "Short span, midspan (bottom)", sxn: p.kind === "cant" ? "Cantilever root (top)" : "Short span, support (top)", syp: p.kind === "cant" ? "Bottom (nominal)" : "Long span, midspan (bottom)", syn: p.kind === "cant" ? "Distribution (top)" : "Long span, support (top)" };
+    for (const k of ["sxp", "sxn", "syp", "syn"]) {
+      const r = R[k]; if (!r) continue;
+      if (r.M > 0) B.push(...flexLines(C, names[k], r.M, 1000, r.d));
+      else B.push({ ref: "", txt: `${names[k]}: no design moment — minimum / distribution steel`, out: "" });
+      if (r.Ad > 0) B.push({ ref: C.ec ? "9.2.1.1" : "Table 3.25", txt: `As,min = ${C.ec ? `max(0.26 fctm/fyk bd, 0.0013bd)` : "0.13% bh"}; provide ≥ ${f0(r.Ad)} mm²/m`, out: `${st(r.bars)} (${f0(r.bars.A)} mm²/m)`, ok: r.bars.A >= r.Ad - 0.5 });
+    }
+    B.push({ sub: "Deflection" });
+    B.push({ ref: C.ec ? "7.4.2" : "3.4.6", txt: `Allowable span/depth (basic ratio × modification factors for steel stress / As,prov/As,req)`, out: `${d.ldAllow > 60 ? ">60" : f1(d.ldAllow)}` });
+    B.push({ ref: "", txt: `Actual L/d = ${f0(lx * 1000)}/${d.d1}`, out: `${f1(d.ldAct)} ${d.ldAct <= d.ldAllow ? "≤ allowable ✔" : "> allowable ✘"}`, ok: d.ldAct <= d.ldAllow });
+    if (p.note) B.push({ ref: "", txt: `Slab ${p.note}`, out: "" });
+    B.push({ sub: "Shear" });
+    B.push({ ref: C.ec ? "6.2.2" : "3.5.5", txt: `VEd ≈ coef × n × l = ${f1(d.V)} kN/m; concrete resistance ${C.ec ? "VRd,c" : "vc·b·d"}`, out: `${f1(d.V)} ≤ ${f1(d.VRc)} kN/m ${d.V <= d.VRc ? "✔" : "✘"}`, ok: d.V <= d.VRc });
+    B.push({ ref: "", txt: "RESULT", out: p.status, ok: p.status !== "REVISE" });
+    return B;
+  }
+
+  // ------------------------------------------------------------------ beam
+  function beam(P, C, L, r) {
+    const B = [{ h: `BEAM ${r.mark} — ${L.lvl.name}` }];
+    if (!r.des) { B.push({ ref: "", txt: r.warn.join("; "), out: "REVISE", ok: false }); return B; }
+    const D = r.des;
+    const pa = r.dir === "h" ? P.gx : P.gy;
+    B.push({ sub: "Arrangement" });
+    B.push({ ref: "", txt: `${r.dir === "h" ? "Along x" : "Along y"} on grid ${r.dir === "h" ? (r.line + 1) : SHEETS.letters(r.line)}; supports: ${r.sup.map(s => s.type === "col" ? "column" : "beam").join(", ")}; total length ${f(r.L)} m`, out: `${D.bw} × ${D.h} mm` });
+    B.push({ ref: "", txt: `Slab on ${r.type === "T-beam" ? "both sides" : r.type === "L-beam" ? "one side" : "neither side"}`, out: r.type.toUpperCase() });
+    B.push({ sub: "Loading per element (characteristic)" });
+    const sw = D.bw / 1000 * (D.h - L.lvl.h) / 1000 * 25;
+    B.push({ ref: "", txt: `Self-weight of downstand = ${D.bw/1000} × ${((D.h - L.lvl.h) / 1000).toFixed(3)} × 25`, out: `${f(sw)} kN/m` });
+    D.spans.forEach((s, i) => {
+      const e = r.el[i];
+      const pts = e.pts.length ? `; point loads ${e.pts.map(p => `${f1(p.G)}/${f1(p.Q)} kN at ${f(p.a)} m from ${p.from}`).join(", ")}` : "";
+      B.push({ ref: "", txt: `${s.kind === "span" ? "Span" : "Cantilever"} ${i + 1} (L = ${f(s.L)} m): slab + walls ${f(e.g)} + self-weight ${f(sw)}${pts}`, out: `gk ${f(s.g)} · qk ${f(s.q)} kN/m` });
+    });
+    B.push({ sub: "Analysis" });
+    B.push({ ref: C.ec ? "5.1.3" : "3.2.1.2", txt: `Continuous beam by stiffness method on knife-edge supports; load patterns: all spans ${C.gG}G+${C.gQ}Q, alternate spans and adjacent pairs with ${C.gGmin}G elsewhere`, out: "" });
+    D.spans.forEach((s, i) => B.push({ ref: "", txt: `${s.kind === "span" ? "Span" : "Cantilever"} ${i + 1}: max sagging, hogging at left / right support, max shear`, out: `M+ ${f1(s.Mpos)} · M− ${f1(s.MnL)}/${f1(s.MnR)} kNm · V ${f1(s.V)} kN` }));
+    B.push({ ref: "", txt: `Support reactions Gk / Qk: ${D.an.RG.map((g, k) => `${f1(g)}/${f1(D.an.RQ[k])}`).join(" · ")}`, out: "kN" });
+    B.push({ sub: "Section design" });
+    B.push({ ref: "", txt: `d = h − cover − link − Ø/2 = ${D.h} − ${P.mat.cb} − 8 − 10`, out: `d = ${D.d} mm` });
+    D.spans.forEach((s, i) => {
+      B.push({ ref: "", txt: `— ${s.kind === "span" ? "Span" : "Cantilever"} ${i + 1}`, out: "" });
+      if (s.Mpos > 0 && s.kind === "span") {
+        if (r.type !== "Rectangular") {
+          B.push({ ref: C.ec ? "5.3.2.1" : "3.4.1.5", txt: C.ec ? `beff = bw + Σ min(0.2bi + 0.1l0, 0.2l0, bi); l0 = ${f0(s.l0)} mm, b1 = ${f0(s.b1)}, b2 = ${f0(s.b2)}` : `b = bw + lz/${r.type === "T-beam" ? 5 : 10}; lz = ${f0(s.l0)} mm`, out: `beff = ${f0(s.bf)} mm` });
+          const Mf = (C.ec ? 0.567 * C.fck : 0.45 * C.fcu) * s.bf * s.hf * (D.d - s.hf / 2) / 1e6;
+          B.push({ ref: "", txt: `Flange capacity Mf = ${C.ec ? "0.567fck" : "0.45fcu"} beff hf (d − hf/2) = ${f1(Mf)} kNm ${s.Mpos <= Mf ? "≥ M → neutral axis in flange" : "< M → flanged equation"}`, out: "" });
+          if (s.Mpos <= Mf) B.push(...flexLines(C, "Sagging", s.Mpos, s.bf, D.d));
+          else B.push({ ref: C.ec ? "Concise EC2" : "Eq 1", txt: `As = [M + 0.1${C.ec ? "fck" : "fcu"} bw d (${C.ec ? "0.36" : "0.45"}d − hf)] / [${C.ec ? "fyd" : "0.87fy"} (d − 0.5hf)]`, out: `As,req = ${f0(s.As)} mm²` });
+        } else B.push(...flexLines(C, "Sagging", s.Mpos, D.bw, D.d));
+      }
+      B.push({ ref: "", txt: `Bottom bars`, out: `${bt(s.bot)} (${f0(s.bot.A)} mm²)${s.bot.layers > 1 ? " 2 layers" : ""}`, ok: true });
+      if (s.MnL > 0) B.push(...flexLines(C, "Hogging, left support", s.MnL, D.bw, D.d));
+      B.push({ ref: "", txt: `Top bars, left support`, out: `${bt(s.topL)} (${f0(s.topL.A)} mm²)` });
+      if (s.MnR > 0) B.push(...flexLines(C, "Hogging, right support", s.MnR, D.bw, D.d));
+      B.push({ ref: "", txt: `Top bars, right support`, out: `${bt(s.topR)} (${f0(s.topR.A)} mm²)` });
+      if (C.ec) {
+        const z = 0.9 * D.d, nu1 = 0.6 * (1 - C.fck / 250);
+        const Vm = D.bw * z * nu1 * C.fck / 1.5 / 2.9 / 1000;
+        B.push({ ref: "6.2.3", txt: `Shear: VEd = ${f1(s.V)} kN; VRd,max (cotθ = 2.5) = bw z ν1 fcd/(cotθ+tanθ) = ${f1(Vm)} kN; VRd,c = ${f1(s.links.VRc)} kN`, out: "" });
+        B.push({ ref: "6.2.3(3)", txt: `Asw/s = VEd/(z fywd cotθ) ≥ 0.08√fck bw/fywk → H8 2-leg (101 mm²)`, out: `links @ ${s.links.s} mm`, ok: s.links.ok });
+      } else {
+        const v = s.V * 1000 / (D.bw * D.d);
+        B.push({ ref: "3.4.5", txt: `Shear: v = V/(bd) = ${f(v)} MPa; vc = ${f(s.links.VRc * 1000 / (D.bw * D.d))} MPa; Asv/sv = ${v <= s.links.VRc * 1000 / (D.bw * D.d) + 0.4 ? "0.4b/0.87fyv" : "b(v − vc)/0.87fyv"}`, out: `H8 2-leg @ ${s.links.s} mm`, ok: s.links.ok });
+      }
+      B.push({ ref: C.ec ? "7.4.2" : "3.4.6", txt: `Deflection (${{ ss: "simply supported", end: "end span", int: "interior span", cant: "cantilever" }[s.dk]}): allowable L/d ${f1(s.ldA)}, actual ${f1(s.ldC)}`, out: s.ldC <= s.ldA ? "✔" : "✘", ok: s.ldC <= s.ldA });
+    });
+    for (const w of r.warn) B.push({ ref: "", txt: "Note: " + w, out: "CHECK", ok: false });
+    B.push({ ref: "", txt: "RESULT", out: r.status, ok: r.status !== "REVISE" });
+    return B;
+  }
+
+  // ------------------------------------------------------------------ column
+  function column(P, C, D, c) {
+    const B = [{ h: `COLUMN ${c.name} — grid ${SHEETS.letters(c.i)}/${c.j + 1}` }];
+    if (!c.res) { B.push({ ref: "", txt: "No section up to 600 × 600 satisfies the checks — add columns or beams", out: "REVISE", ok: false }); return B; }
+    const b = c.res.b;
+    B.push({ ref: "", txt: `Square section b = h = ${b} mm, braced; effective length factor β = ${P.beta}`, out: `${b} × ${b}` });
+    c.res.des.forEach((d, k) => {
+      B.push({ sub: `Storey below ${d.level} (height ${d.H} m)` });
+      B.push({ ref: "", txt: `Loads from beams above (cumulative) Gk ${f1(d.Gbeams)} + self-weight ${f1(d.sw)}; Qk ${f1(d.Qk)}`, out: `Gk ${f1(d.Gk)} · Qk ${f1(d.Qk)} kN` });
+      B.push({ ref: "", txt: `NEd = ${C.gG} × ${f1(d.Gk)} + ${C.gQ} × ${f1(d.Qk)}`, out: `NEd = ${f0(d.N)} kN` });
+      B.push({ ref: "", txt: `End moments from beams (sub-frame share of out-of-balance FEM): Mx = ${f1(d.Mx)}, My = ${f1(d.My)} kNm`, out: "" });
+      B.push({ ref: C.ec ? "5.8.3.2" : "3.8.1.6", txt: `l0 = β × l = ${P.beta} × ${d.H}`, out: `l0 = ${f(d.l0)} m` });
+      for (const [nm, a] of [["x", d.ax], ["y", d.ay]]) {
+        if (C.ec) {
+          B.push({ ref: "5.8.3.1", txt: `Axis ${nm}: λ = l0√12/h = ${f1(a.lam)}; n = NEd/(Ac fcd) = ${f3(a.n)}; ω = ${f3(a.om)}; λlim = 20ABC/√n (A = 0.7, B = √(1+2ω), C = 0.7)`, out: `λlim = ${f1(a.lamlim)} → ${a.slender ? "LONG (slender)" : "SHORT"}` });
+          B.push({ ref: "5.2 / 6.1(4)", txt: `M0 = M + NEd·ei (ei = l0/400 = ${f1(a.ei)} mm); minimum NEd·e0 (e0 = ${f1(a.e0)} mm)`, out: `M0 = ${f1(a.M0)} kNm` });
+          if (a.slender) B.push({ ref: "5.8.8", txt: `Nominal curvature: Kr = ${f3(a.Kr)}, Kφ = ${f3(a.Kf)}, e2 = Kr Kφ (fyd/Es)/(0.45d) · l0²/10 = ${f1(a.e2)} mm`, out: `M2 = ${f1(a.M2)} kNm` });
+        } else {
+          B.push({ ref: "3.8.1.3", txt: `Axis ${nm}: le/h = ${f(d.l0 * 1000)}/${b} = ${f(a.lam)} ${a.slender ? "≥" : "<"} 15 (braced)`, out: a.slender ? "LONG (slender)" : "SHORT" });
+          if (a.slender) B.push({ ref: "3.8.3", txt: `Madd = N au, au = βa K h; βa = (le/b)²/2000, K = (Nuz − N)/(Nuz − Nbal) = ${f3(a.K)}`, out: `Madd = ${f1(a.M2)} kNm` });
+          B.push({ ref: "3.8.2.4", txt: `Minimum eccentricity emin = min(0.05h, 20) = ${f1(a.emin)} mm`, out: "" });
+        }
+        B.push({ ref: "", txt: `Design moment about ${nm}`, out: `MEd,${nm} = ${f1(a.MEd)} kNm` });
+      }
+      B.push({ ref: "", txt: `Bars checked: ${d.checkedBars} (${d.perFace} per face, Aface = ${f0(d.Af)} mm²); strain-compatibility MRd at NEd`, out: `MRd = ${f1(d.MRd)} kNm` });
+      if (C.ec) B.push({ ref: "5.8.9", txt: `Biaxial: (MEd,x/MRd)^a + (MEd,y/MRd)^a, NEd/NRd = ${f3(d.N / d.NRd)} → a = ${f(d.aExp)}`, out: `${f3(d.util)} ${d.util <= 1 ? "≤ 1 ✔" : "✘"}`, ok: d.util <= 1 });
+      else B.push({ ref: "3.8.4.5", txt: `Biaxial: M′ = M_major + β M_minor, β = ${f3(d.betaB)} (N/bhfcu = ${f3(d.nr)}) → M′ = ${f1(d.Mp)} kNm`, out: `M′/MRd = ${f3(d.util)} ${d.util <= 1 ? "✔" : "✘"}`, ok: d.util <= 1 });
+      B.push({ ref: C.ec ? "9.5.2" : "3.12.5", txt: `Steel ${d.nb}H${d.phi} = ${f0(d.Ast)} mm² (${f(100 * d.Ast / (b * b))}%)` + (d.unified ? " — heaviest arrangement used in every storey (bars run continuously)" : ""), out: `${d.nb}H${d.phi}` });
+    });
+    const phi = c.res.des[0].phi;
+    B.push({ ref: C.ec ? "9.5.3" : "3.12.7", txt: `Links Ø ≥ max(6, Ø/4); spacing ≤ ${C.ec ? "min(20Ø, b, 400)" : "12Ø"}; 0.6× within 400 of beams and at laps`, out: `H8 @ ${Math.floor(Math.min(C.ec ? 20 * phi : 12 * phi, b, 400) / 25) * 25}` });
+    B.push({ ref: "", txt: "RESULT", out: c.status, ok: c.status !== "REVISE" });
+    return B;
+  }
+
+  function all(P, D) {
+    const C = D.C, out = [{ id: "basis", title: "Design basis", blocks: basis(P, C) }];
+    for (const L of D.levels) {
+      for (const p of L.panels) out.push({ id: "s-" + p.mark, title: `Slab ${p.mark} (${L.lvl.name})`, blocks: slab(P, C, L, p), status: p.status });
+      for (const r of L.runs) out.push({ id: "b-" + r.mark, title: `Beam ${r.mark} (${L.lvl.name})`, blocks: beam(P, C, L, r), status: r.status });
+    }
+    for (const c of D.cols) out.push({ id: "c-" + c.name, title: `Column ${c.name}`, blocks: column(P, C, D, c), status: c.status });
+    return out;
+  }
+
+  // HTML rendering
+  const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  function html(sec) {
+    let h = `<table class="calc"><tr><th class="ref">Ref.</th><th>Calculation</th><th class="out">Output</th></tr>`;
+    for (const b of sec.blocks) {
+      if (b.h) h += `<tr class="ch"><td colspan="3">${esc(b.h)}</td></tr>`;
+      else if (b.sub) h += `<tr class="cs"><td></td><td colspan="2">${esc(b.sub)}</td></tr>`;
+      else h += `<tr><td class="ref">${esc(b.ref)}</td><td>${esc(b.txt)}</td><td class="out ${b.ok === false ? "bad" : (b.ok ? "good" : "")}">${esc(b.out)}</td></tr>`;
+    }
+    return h + "</table>";
+  }
+
+  // jsPDF core fonts are WinAnsi only: map the remaining symbols to plain text
+  const MAP = { "≤": "<=", "≥": ">=", "√": "sqrt", "α": "alpha ", "β": "beta ", "γ": "gamma ", "λ": "lambda", "ν": "nu", "ω": "omega", "φ": "phi", "θ": "theta", "ρ": "rho",
+    "Σ": "sum ", "Δ": "delta", "✔": "OK", "✘": "NOT OK", "⁶": "^6", "⁴": "^4", "′": "'", "→": "->", "—": "-", "–": "-", "↔": "<->", "↕": "|", "…": "...", "∞": "inf", "ε": "eps", "≈": "~", "²": "^2", "³": "^3", "Ø": "dia ", "⟂": "perp" };
+  const clean = t => String(t == null ? "" : t).replace(/[≤≥√αβγλνωφθρΣΔ✔✘⁶⁴′→—–↔↕…∞ε≈²³Ø⟂]/g, ch => MAP[ch] || ch);
+  // PDF rendering (jsPDF, A4 portrait, vector text)
+  function pdf(doc, P, secs, startNew) {
+    const W = 210, M = 12, colRef = 22, colOut = 50, colTxt = W - 2 * M - colRef - colOut;
+    let y = 0, page = 0;
+    const I = P.info || {};
+    const header = () => {
+      page++;
+      doc.setDrawColor(0); doc.setLineWidth(0.3); doc.rect(M, 8, W - 2 * M, 16);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.text((I.company || "").toUpperCase(), M + 2, 13);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7.5);
+      doc.text(clean(`Project: ${I.name || ""}   Client: ${I.client || ""}`), M + 2, 17.5);
+      doc.text(clean(`Calculations to ${P.code === "EC2" ? "BS EN 1992-1-1" : "BS 8110-1"} · made by ${I.engineer || ""} · ${I.date || ""}`), M + 2, 21.5);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text(`Sheet C-${String(page).padStart(2, "0")}`, W - M - 2, 13, { align: "right" });
+      doc.setFillColor(232, 238, 245); doc.rect(M, 26, W - 2 * M, 6, "F");
+      doc.setFontSize(7.5); doc.text("Ref.", M + 1.5, 30); doc.text("Calculation", M + colRef + 1.5, 30); doc.text("Output", W - M - colOut + 1.5, 30);
+      doc.setLineWidth(0.15); doc.line(M + colRef, 26, M + colRef, 287); doc.line(W - M - colOut, 26, W - M - colOut, 287); doc.rect(M, 26, W - 2 * M, 261);
+      y = 36;
+    };
+    const need = h => { if (y + h > 284) { doc.addPage("a4", "portrait"); header(); } };
+    if (startNew) doc.addPage("a4", "portrait");
+    header();
+    for (const sec of secs) {
+      for (const b of sec.blocks) {
+        if (b.h) { need(12); y += 2; doc.setFont("helvetica", "bold"); doc.setFontSize(9.5); doc.setTextColor(11, 79, 138); doc.text(clean(b.h), M + colRef + 1.5, y); doc.setTextColor(0); y += 5; continue; }
+        if (b.sub) { need(8); doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.text(clean(b.sub), M + colRef + 1.5, y); y += 4.2; continue; }
+        doc.setFont("helvetica", "normal"); doc.setFontSize(7.6);
+        const tl = doc.splitTextToSize(clean(b.txt), colTxt - 3), ol = doc.splitTextToSize(clean(b.out), colOut - 3), rl = doc.splitTextToSize(clean(b.ref), colRef - 3);
+        const h = Math.max(tl.length, ol.length, rl.length) * 3.4 + 0.8;
+        need(h);
+        doc.setTextColor(90); doc.text(rl, M + 1.5, y); doc.setTextColor(0);
+        doc.text(tl, M + colRef + 1.5, y);
+        if (b.ok === false) doc.setTextColor(176, 0, 32); else if (b.ok) doc.setTextColor(10, 122, 47);
+        doc.setFont("helvetica", "bold"); doc.text(ol, W - M - colOut + 1.5, y); doc.setFont("helvetica", "normal"); doc.setTextColor(0);
+        y += h;
+      }
+      y += 2;
+    }
+  }
+  return { all, html, pdf };
+})();
+if (typeof module !== "undefined") module.exports = CALC;
+
+/* Excel workbook with live formulas (ExcelJS). Analysis results are inputs; section design is formula-driven. */
+const XLS = (() => {
+  const BLUE = { argb: "FF0000FF" }, INFILL = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFF2CC" } };
+  const HEAD = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F4E78" } };
+  const r1 = x => Math.round(x * 1000) / 1000;
+
+  function head(ws, cols) {
+    ws.columns = cols.map(([h, w]) => ({ header: h, width: w }));
+    const r = ws.getRow(1);
+    r.eachCell(c => { c.font = { bold: true, color: { argb: "FFFFFFFF" }, name: "Arial", size: 9 }; c.fill = HEAD; c.alignment = { wrapText: true, vertical: "middle", horizontal: "center" }; });
+    r.height = 42; ws.views = [{ state: "frozen", xSplit: 1, ySplit: 1 }];
+  }
+  function put(ws, row, col, v, kind, fmt) {
+    const c = ws.getCell(row, col);
+    if (typeof v === "string" && v.startsWith("=")) c.value = { formula: v.slice(1) };
+    else c.value = v;
+    c.font = { name: "Arial", size: 9, color: kind === "in" ? BLUE : undefined, bold: kind === "res" };
+    if (kind === "in") c.fill = INFILL;
+    if (fmt) c.numFmt = fmt;
+    c.alignment = { horizontal: "center" };
+    return c;
+  }
+
+  async function build(P, D) {
+    const C = D.C, ec = C.ec;
+    const wb = new ExcelJS.Workbook(); wb.creator = "StructDesign"; wb.created = new Date();
+    // ---------------- Read me + basis
+    const rm = wb.addWorksheet("Basis");
+    rm.getColumn(1).width = 46; rm.getColumn(2).width = 16; rm.getColumn(3).width = 70;
+    const I = P.info || {};
+    const rows = [
+      ["STRUCTDESIGN – DESIGN WORKBOOK", "", ""], [`${I.name || ""} · Client: ${I.client || ""}`, "", ""], [`${I.company || ""} · ${I.engineer || ""} ${I.engineer2 ? "& " + I.engineer2 : ""}`, "", ""], ["", "", ""],
+      ["Design code", ec ? "EC2" : "BS 8110", "Blue cells on yellow are inputs (from the app's analysis or your own values). Black cells are formulas."],
+      [ec ? "fck (MPa)" : "fcu (MPa)", ec ? P.mat.fck : P.mat.fcu, "Concrete strength"],
+      [ec ? "fyk (MPa)" : "fy (MPa)", ec ? P.mat.fyk : P.mat.fy, "Reinforcement yield strength"],
+      ["γG (permanent)", C.gG, ec ? "EN 1990 eq 6.10" : "BS 8110 Table 2.1"],
+      ["γQ (imposed)", C.gQ, ""],
+      [ec ? "fyd = fyk/1.15" : "0.87 fy", "=B7*" + (ec ? "1/1.15" : "0.87"), "Design steel stress"],
+      [ec ? "fcd = 0.85fck/1.5" : "0.45 fcu", ec ? "=0.85*B6/1.5" : "=0.45*B6", "Design concrete stress"],
+      ["fctm = 0.3 fck^(2/3)", ec ? "=0.3*B6^(2/3)" : "", ec ? "EC2 Table 3.1" : "not used"],
+      ["K′", ec ? 0.167 : 0.156, "Limit for singly reinforced sections"],
+      ["", "", ""],
+      ["Sheets", "", "Slabs – one row per panel: moments from coefficient × n × lx², design at short-span midspan and support."],
+      ["", "", "Beams – one row per span: moments/shear from the app's continuous-beam analysis (inputs), bending and shear design by formula."],
+      ["", "", "Columns – one row per storey: axial load and design moments (inputs), slenderness and axial capacity by formula; MRd from the app's strain-compatibility check."],
+      ["", "", "Change any blue input (e.g. a slab thickness, bar size or moment) and the checks update."],
+    ];
+    rows.forEach((r, i) => { r.forEach((v, j) => put(rm, i + 1, j + 1, v, (i >= 4 && i <= 12 && j === 1 && !(typeof v === "string" && v.startsWith("="))) ? "in" : null)); });
+    rm.getCell("A1").font = { bold: true, size: 14, name: "Arial", color: { argb: "FF1F4E78" } };
+    for (let i = 1; i <= 18; i++) { rm.getCell(i, 1).alignment = { horizontal: "left" }; rm.getCell(i, 3).alignment = { horizontal: "left", wrapText: true }; }
+    const F = "Basis!$B$6", FY = "Basis!$B$7", GG = "Basis!$B$8", GQ = "Basis!$B$9", FYD = "Basis!$B$10", FCD = "Basis!$B$11", FCT = "Basis!$B$12", KP = "Basis!$B$13";
+
+    // ---------------- Slabs
+    const ws = wb.addWorksheet("Slabs");
+    head(ws, [["Mark", 8], ["Level", 12], ["Classification", 30], ["lx (m)", 7], ["ly (m)", 7], ["h (mm)", 7], ["cover", 6], ["finishes+part. kN/m²", 9], ["qk kN/m²", 7], ["gk = h·25 + fin", 8], ["n (ULS) kN/m²", 8],
+      ["β short mid", 8], ["β short sup", 8], ["M short mid kNm/m", 9], ["M short sup kNm/m", 9], ["d (mm)", 7], ["K mid", 7], ["z mid", 7], ["As req mid", 8], ["As min", 8], ["bar Ø mid", 6], ["spacing mid", 7], ["As prov mid", 8], ["check mid", 9],
+      ["K sup", 7], ["As req sup", 8], ["bar Ø sup", 6], ["spacing sup", 7], ["As prov sup", 8], ["check sup", 9]]);
+    let r = 2;
+    for (const L of D.levels) for (const p of L.panels) {
+      if (!p.d) continue;
+      const d = p.d, R = d.rows, lx = p.kind === "cant" ? p.Lc : p.lx;
+      const mid = p.kind === "cant" ? R.sxp : R.sxp, sup = R.sxn;
+      const cm = mid.M / (d.n * lx * lx), cs = sup ? sup.M / (d.n * lx * lx) : 0;
+      const cov = d.h - d.d1 - 5;
+      put(ws, r, 1, p.mark, "res"); put(ws, r, 2, L.lvl.name); put(ws, r, 3, p.cls); ws.getCell(r, 3).alignment = { horizontal: "left" };
+      put(ws, r, 4, r1(lx), "in", "0.000"); put(ws, r, 5, r1(p.kind === "cant" ? p.Wd : p.ly), "in", "0.000"); put(ws, r, 6, d.h, "in", "0"); put(ws, r, 7, cov, "in", "0");
+      put(ws, r, 8, r1(d.gk - d.h / 1000 * 25), "in", "0.00"); put(ws, r, 9, d.qk, "in", "0.00");
+      put(ws, r, 10, `=F${r}/1000*25+H${r}`, null, "0.00"); put(ws, r, 11, `=${GG}*J${r}+${GQ}*I${r}`, null, "0.00");
+      put(ws, r, 12, r1(cm * 1000) / 1000, "in", "0.0000"); put(ws, r, 13, Math.round(cs * 1e5) / 1e5, "in", "0.0000");
+      put(ws, r, 14, `=L${r}*K${r}*D${r}^2`, null, "0.00"); put(ws, r, 15, `=M${r}*K${r}*D${r}^2`, null, "0.00");
+      put(ws, r, 16, `=F${r}-G${r}-5`, null, "0");
+      const K = (M) => `=IF(${M}${r}<=0,0,${M}${r}*1E6/(1000*P${r}^2*${F}))`;
+      put(ws, r, 17, K("N"), null, "0.000");
+      put(ws, r, 18, ec ? `=MIN(0.95*P${r},P${r}/2*(1+SQRT(MAX(1-3.53*Q${r},0))))` : `=MIN(0.95*P${r},P${r}*(0.5+SQRT(MAX(0.25-Q${r}/0.9,0))))`, null, "0");
+      put(ws, r, 19, `=IF(N${r}<=0,0,N${r}*1E6/(${FYD}*R${r}))`, null, "0");
+      put(ws, r, 20, ec ? `=MAX(0.26*${FCT}/${FY}*1000*P${r},0.0013*1000*P${r})` : `=0.0013*1000*F${r}`, null, "0");
+      put(ws, r, 21, mid.bars ? mid.bars.d : 10, "in", "0"); put(ws, r, 22, mid.bars ? mid.bars.s : 200, "in", "0");
+      put(ws, r, 23, `=PI()*U${r}^2/4*1000/V${r}`, null, "0");
+      put(ws, r, 24, `=IF(AND(Q${r}<=${KP},W${r}>=MAX(S${r},T${r})),"OK","REVISE")`, "res");
+      put(ws, r, 25, K("O"), null, "0.000");
+      put(ws, r, 26, ec ? `=IF(O${r}<=0,0,O${r}*1E6/(${FYD}*MIN(0.95*P${r},P${r}/2*(1+SQRT(MAX(1-3.53*Y${r},0))))))` : `=IF(O${r}<=0,0,O${r}*1E6/(${FYD}*MIN(0.95*P${r},P${r}*(0.5+SQRT(MAX(0.25-Y${r}/0.9,0))))))`, null, "0");
+      put(ws, r, 27, sup && sup.bars ? sup.bars.d : 10, "in", "0"); put(ws, r, 28, sup && sup.bars ? sup.bars.s : 250, "in", "0");
+      put(ws, r, 29, `=PI()*AA${r}^2/4*1000/AB${r}`, null, "0");
+      put(ws, r, 30, `=IF(O${r}<=0,"-",IF(AND(Y${r}<=${KP},AC${r}>=MAX(Z${r},T${r})),"OK","REVISE"))`, "res");
+      r++;
+    }
+
+    // ---------------- Beams
+    const wbm = wb.addWorksheet("Beams");
+    head(wbm, [["Mark", 8], ["Level", 12], ["Type", 11], ["Span", 9], ["L (m)", 7], ["bw (mm)", 7], ["h (mm)", 7], ["b for sagging (beff)", 9], ["cover", 6], ["d = h−c−8−10", 8],
+      ["M+ kNm (analysis)", 9], ["M− kNm (analysis)", 9], ["V kN (analysis)", 9], ["K sag", 7], ["z sag", 7], ["As req bottom", 9], ["As min", 8], ["Bottom bars", 9], ["As prov bottom", 9], ["check bottom", 9],
+      ["K hog", 7], ["As req top", 9], ["Top bars", 9], ["As prov top", 9], ["check top", 9], ["Asw/s req (mm²/mm)", 10], ["link spacing", 8], ["Asw/s prov (H8 2-leg)", 10], ["check shear", 9]]);
+    r = 2;
+    for (const L of D.levels) for (const b of L.runs) {
+      if (!b.des) continue;
+      b.des.spans.forEach((s, k) => {
+        const top = s.topL.A >= s.topR.A ? s.topL : s.topR;
+        put(wbm, r, 1, k ? "" : b.mark, "res"); put(wbm, r, 2, L.lvl.name); put(wbm, r, 3, b.type);
+        put(wbm, r, 4, s.kind === "span" ? `span ${k + 1}` : "cantilever"); put(wbm, r, 5, r1(s.L), null, "0.00");
+        put(wbm, r, 6, b.des.bw, "in", "0"); put(wbm, r, 7, b.des.h, "in", "0"); put(wbm, r, 8, Math.round(s.inFlange !== false ? s.bf : b.des.bw), "in", "0"); put(wbm, r, 9, P.mat.cb, "in", "0");
+        put(wbm, r, 10, `=G${r}-I${r}-8-10`, null, "0");
+        put(wbm, r, 11, r1(s.kind === "span" ? s.Mpos : 0), "in", "0.0"); put(wbm, r, 12, r1(Math.max(s.MnL, s.MnR)), "in", "0.0"); put(wbm, r, 13, r1(s.V), "in", "0.0");
+        put(wbm, r, 14, `=IF(K${r}<=0,0,K${r}*1E6/(H${r}*J${r}^2*${F}))`, null, "0.000");
+        put(wbm, r, 15, ec ? `=MIN(0.95*J${r},J${r}/2*(1+SQRT(MAX(1-3.53*N${r},0))))` : `=MIN(0.95*J${r},J${r}*(0.5+SQRT(MAX(0.25-N${r}/0.9,0))))`, null, "0");
+        put(wbm, r, 16, `=IF(K${r}<=0,0,K${r}*1E6/(${FYD}*O${r}))`, null, "0");
+        put(wbm, r, 17, ec ? `=MAX(0.26*${FCT}/${FY}*F${r}*J${r},0.0013*F${r}*J${r})` : `=0.0013*F${r}*G${r}`, null, "0");
+        put(wbm, r, 18, SD.bt(s.bot), "in"); put(wbm, r, 19, Math.round(s.bot.A), "in", "0");
+        put(wbm, r, 20, `=IF(AND(N${r}<=${KP},S${r}>=MAX(P${r},Q${r})),"OK","REVISE")`, "res");
+        put(wbm, r, 21, `=IF(L${r}<=0,0,L${r}*1E6/(F${r}*J${r}^2*${F}))`, null, "0.000");
+        put(wbm, r, 22, ec ? `=IF(L${r}<=0,0,L${r}*1E6/(${FYD}*MIN(0.95*J${r},J${r}/2*(1+SQRT(MAX(1-3.53*U${r},0))))))` : `=IF(L${r}<=0,0,L${r}*1E6/(${FYD}*MIN(0.95*J${r},J${r}*(0.5+SQRT(MAX(0.25-U${r}/0.9,0))))))`, null, "0");
+        put(wbm, r, 23, SD.bt(top), "in"); put(wbm, r, 24, Math.round(top.A), "in", "0");
+        put(wbm, r, 25, `=IF(L${r}<=0,"-",IF(AND(U${r}<=${KP},X${r}>=V${r}),"OK","REVISE"))`, "res");
+        if (ec) put(wbm, r, 26, `=MAX(M${r}*1000/(0.9*J${r}*${FYD}*2.5),0.08*SQRT(${F})*F${r}/${FY})`, null, "0.000");
+        else put(wbm, r, 26, `=MAX(0.4*F${r}/${FYD},F${r}*(M${r}*1000/(F${r}*J${r})-0.79*MIN(3,100*S${r}/(F${r}*J${r}))^(1/3)*MAX(1,400/J${r})^0.25/1.25*(MIN(${F},40)/25)^(1/3))/${FYD})`, null, "0.000");
+        put(wbm, r, 27, s.links.s, "in", "0");
+        put(wbm, r, 28, `=2*PI()*8^2/4/AA${r}`, null, "0.000");
+        put(wbm, r, 29, `=IF(AND(AB${r}>=Z${r},AA${r}<=0.75*J${r}),"OK","REVISE")`, "res");
+        r++;
+      });
+    }
+
+    // ---------------- Columns
+    const wc = wb.addWorksheet("Columns");
+    head(wc, [["Column", 8], ["Storey", 16], ["b = h (mm)", 8], ["l0 (m)", 7], ["NEd kN", 8], ["MEd,x kNm", 8], ["MEd,y kNm", 8], ["λ = l0√12/h" + (ec ? "" : " (le/h)"), 9], [ec ? "λlim = 20ABC/√n" : "limit", 9], ["Class", 13],
+      ["Bars", 8], ["Asc (mm²)", 8], ["Asc %", 7], ["NRd kN", 8], ["NEd/NRd", 8], ["MRd at NEd (app)", 9], [ec ? "biaxial (MEdx/MRd)^a+(MEdy/MRd)^a" : "M′/MRd", 12], ["check", 9]]);
+    r = 2;
+    for (const c of D.cols) {
+      if (!c.res) continue;
+      c.res.des.forEach((d, k) => {
+        put(wc, r, 1, k ? "" : c.name, "res"); put(wc, r, 2, `below ${d.level}`);
+        put(wc, r, 3, c.res.b, "in", "0"); put(wc, r, 4, r1(d.l0), "in", "0.00"); put(wc, r, 5, r1(d.N), "in", "0.0");
+        put(wc, r, 6, r1(d.ax.MEd), "in", "0.0"); put(wc, r, 7, r1(d.ay.MEd), "in", "0.0");
+        put(wc, r, 8, ec ? `=D${r}*1000*SQRT(12)/C${r}` : `=D${r}*1000/C${r}`, null, "0.0");
+        put(wc, r, 9, ec ? `=20*0.7*SQRT(1+2*L${r}*${FYD}/(C${r}^2*${FCD}))*0.7/SQRT(MAX(E${r}*1000/(C${r}^2*${FCD}),0.01))` : 15, ec ? null : "in", "0.0");
+        put(wc, r, 10, ec ? `=IF(H${r}<=I${r},"SHORT","LONG (slender)")` : `=IF(H${r}<I${r},"SHORT","LONG (slender)")`);
+        put(wc, r, 11, `${d.nb}H${d.phi}`, "in"); put(wc, r, 12, Math.round(d.Ast), "in", "0");
+        put(wc, r, 13, `=100*L${r}/C${r}^2`, null, "0.00");
+        put(wc, r, 14, ec ? `=(${FCD}*C${r}^2+L${r}*${FYD})/1000` : `=(0.45*${F}*(C${r}^2-L${r})+${FYD}*L${r})/1000`, null, "0");
+        put(wc, r, 15, `=E${r}/N${r}`, null, "0.000");
+        put(wc, r, 16, r1(d.MRd), "in", "0.0");
+        if (ec) put(wc, r, 17, `=(F${r}/P${r})^IF(O${r}<=0.1,1,IF(O${r}<=0.7,1+(O${r}-0.1)/0.6*0.5,1.5+(O${r}-0.7)/0.3*0.5))+(G${r}/P${r})^IF(O${r}<=0.1,1,IF(O${r}<=0.7,1+(O${r}-0.1)/0.6*0.5,1.5+(O${r}-0.7)/0.3*0.5))`, null, "0.000");
+        else put(wc, r, 17, r1(d.util), "in", "0.000");
+        put(wc, r, 18, `=IF(AND(Q${r}<=1,O${r}<1,M${r}>=${ec ? 0.2 : 0.4},M${r}<=${ec ? 4 : 6}),"OK","REVISE")`, "res");
+        r++;
+      });
+    }
+    const buf = await wb.xlsx.writeBuffer();
+    return new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  }
+  return { build };
+})();
+if (typeof module !== "undefined") module.exports = XLS;
+
+/* Interactive 3D model (three.js r128, loaded on demand) with optional reinforcement */
+const VIEW3D = (() => {
+  let renderer, scene, camera, root, state = { th: -0.8, ph: 0.75, r: 30, tx: 0, ty: 0, tz: 0 }, el, raf, built = null;
+  function load() {
+    return new Promise((res, rej) => {
+      if (window.THREE) return res();
+      const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+      s.onload = res; s.onerror = () => rej(new Error("3D library could not load (needs internet the first time)")); document.head.appendChild(s);
+    });
+  }
+  function cam() {
+    const { th, ph, r, tx, ty, tz } = state;
+    camera.position.set(tx + r * Math.cos(ph) * Math.cos(th), ty + r * Math.sin(ph), tz + r * Math.cos(ph) * Math.sin(th));
+    camera.lookAt(tx, ty, tz);
+  }
+  function render() { if (renderer) { cam(); renderer.render(scene, camera); } }
+  function mat(rgb, op = 1) { return new THREE.MeshLambertMaterial({ color: new THREE.Color(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255), transparent: op < 1, opacity: op }); }
+
+  // model coords: plan x → X, plan y → Z, height → Y (all in metres)
+  function build(P, D, opts) {
+    if (root) scene.remove(root);
+    root = new THREE.Group();
+    const B = SECTIONS.boxes(P, D);
+    const lvlTop = SECTIONS.levelsZ(P).map(z => z * 1000);
+    for (const b of B) {
+      if (b.kind === "slab" && !opts.slabs) continue;
+      if (b.kind === "beam" && !opts.beams) continue;
+      if (b.kind === "col" && !opts.cols) continue;
+      const g = new THREE.BoxGeometry((b.x1 - b.x0) / 1000, (b.z1 - b.z0) / 1000, (b.y1 - b.y0) / 1000);
+      const m = new THREE.Mesh(g, mat(b.col, b.kind === "slab" ? (opts.rebar ? 0.25 : 0.8) : (opts.rebar ? 0.35 : 1)));
+      m.position.set((b.x0 + b.x1) / 2000, (b.z0 + b.z1) / 2000, (b.y0 + b.y1) / 2000);
+      root.add(m);
+      const e = new THREE.LineSegments(new THREE.EdgesGeometry(g), new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.35 }));
+      e.position.copy(m.position); root.add(e);
+    }
+    if (opts.rebar) {
+      const red = new THREE.LineBasicMaterial({ color: 0xcc0000 }), blue = new THREE.LineBasicMaterial({ color: 0x0033cc }), grey = new THREE.LineBasicMaterial({ color: 0x777777 });
+      const seg = (pts, m) => { const g = new THREE.BufferGeometry().setFromPoints(pts.map(p => new THREE.Vector3(p[0] / 1000, p[2] / 1000, p[1] / 1000))); root.add(new THREE.Line(g, m)); };
+      D.levels.forEach((Lv, li) => {
+        const zt = lvlTop[li];
+        for (const r of Lv.runs) {
+          if (!r.des) continue;
+          const bw = r.des.bw, h = r.des.h, c = P.mat.cb + 8;
+          const pa = r.dir === "h" ? P.gx : P.gy, line = r.dir === "h" ? P.gy[r.line] : P.gx[r.line];
+          const pt = (a, off, z) => r.dir === "h" ? [a, line + off, z] : [line + off, a, z];
+          r.el.forEach((e, i) => {
+            const s = r.des.spans[i], A0 = pa[e.k0], A1 = pa[e.k1], Lm = A1 - A0;
+            const lay = (n, z, a0, a1, m) => { for (let k = 0; k < n; k++) { const off = -bw / 2 + c + k * (bw - 2 * c) / Math.max(n - 1, 1); seg([pt(a0, off, z), pt(a1, off, z)], m); } };
+            lay(s.bot.n, zt - h + c, A0, A1, red);
+            const tl = e.kind === "cantL" ? A1 : A0 + 0.3 * Lm, tr = e.kind === "cantR" ? A0 : A1 - 0.3 * Lm;
+            if (e.kind !== "cantR") lay(s.topL.n, zt - c, A0, tl, blue);
+            if (e.kind !== "cantL") lay(s.topR.n, zt - c, tr, A1, blue);
+            const nl = Math.min(30, Math.round(Lm / s.links.s));
+            for (let q = 1; q < nl; q++) { const a = A0 + q * Lm / nl; seg([pt(a, -bw / 2 + c, zt - h + c), pt(a, -bw / 2 + c, zt - c), pt(a, bw / 2 - c, zt - c), pt(a, bw / 2 - c, zt - h + c), pt(a, -bw / 2 + c, zt - h + c)], grey); }
+          });
+        }
+      });
+      for (const col of D.cols) {
+        if (!col.res) continue;
+        const d = col.res.des[0], b = col.res.b, c = P.mat.cb + 8, per = d.nb === 4 ? 2 : d.nb === 8 ? 3 : 4, top = lvlTop[lvlTop.length - 1];
+        const ps = new Set();
+        for (let k = 0; k < per; k++) { const t = -b / 2 + c + k * (b - 2 * c) / (per - 1); [[t, -b / 2 + c], [t, b / 2 - c], [-b / 2 + c, t], [b / 2 - c, t]].forEach(p => ps.add(p.join(","))); }
+        for (const p of ps) { const [u, v] = p.split(",").map(Number); seg([[col.x + u, col.y + v, -300], [col.x + u, col.y + v, top - 40]], red); }
+      }
+    }
+    // ground grid
+    const gx = P.gx, gy = P.gy;
+    const gm = new THREE.LineBasicMaterial({ color: 0x88aa99 });
+    for (const x of gx) { const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x / 1000, 0, gy[0] / 1000 - 1), new THREE.Vector3(x / 1000, 0, gy[gy.length - 1] / 1000 + 1)]); root.add(new THREE.Line(g, gm)); }
+    for (const y of gy) { const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(gx[0] / 1000 - 1, 0, y / 1000), new THREE.Vector3(gx[gx.length - 1] / 1000 + 1, 0, y / 1000)]); root.add(new THREE.Line(g, gm)); }
+    scene.add(root);
+    const cx = (gx[0] + gx[gx.length - 1]) / 2000, cz = (gy[0] + gy[gy.length - 1]) / 2000, ht = lvlTop[lvlTop.length - 1] / 1000;
+    if (!built) Object.assign(state, { tx: cx, ty: ht / 2, tz: cz, r: Math.max(gx[gx.length - 1] - gx[0], gy[gy.length - 1] - gy[0]) / 1000 * 1.9 });
+    built = true;
+    render();
+  }
+
+  async function show(container, P, D, opts) {
+    await load();
+    el = container;
+    if (!renderer) {
+      renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      scene = new THREE.Scene(); scene.background = new THREE.Color(0xf4f7fb);
+      camera = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+      const dl = new THREE.DirectionalLight(0xffffff, 0.55); dl.position.set(20, 40, 10); scene.add(dl);
+      const cv = renderer.domElement; cv.style.touchAction = "none";
+      const ptrs = new Map(); let last = null, pinch = null;
+      cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); last = [e.clientX, e.clientY]; });
+      cv.addEventListener("pointermove", e => {
+        if (!ptrs.has(e.pointerId)) return;
+        ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+        if (ptrs.size === 2) {
+          const [a, b] = [...ptrs.values()], dd = Math.hypot(a[0] - b[0], a[1] - b[1]);
+          if (pinch) state.r = Math.max(2, Math.min(300, state.r * pinch / dd));
+          pinch = dd; render(); return;
+        }
+        const dx = e.clientX - last[0], dy = e.clientY - last[1]; last = [e.clientX, e.clientY];
+        if (e.shiftKey || e.buttons === 2) { const k = state.r / 600; state.tx -= dx * k * Math.sin(state.th) * -1; state.tz -= dx * k * Math.cos(state.th); state.ty += dy * k; }
+        else { state.th += dx * 0.008; state.ph = Math.max(-0.2, Math.min(1.5, state.ph + dy * 0.008)); }
+        render();
+      });
+      const up = e => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = null; };
+      cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+      cv.addEventListener("wheel", e => { e.preventDefault(); state.r = Math.max(2, Math.min(300, state.r * (e.deltaY > 0 ? 1.1 : 0.9))); render(); }, { passive: false });
+      cv.addEventListener("contextmenu", e => e.preventDefault());
+    }
+    container.innerHTML = ""; container.appendChild(renderer.domElement);
+    const w = container.clientWidth || 800, h = Math.max(320, Math.min(window.innerHeight * 0.68, w * 0.75));
+    renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+    build(P, D, opts);
+  }
+  function view(name) {
+    const v = { iso: [-0.8, 0.75], front: [-Math.PI / 2, 0.05], side: [0, 0.05], top: [-Math.PI / 2, 1.5] }[name];
+    if (v) { state.th = v[0]; state.ph = v[1]; render(); }
+  }
+  function snapshot() { render(); return renderer ? renderer.domElement.toDataURL("image/png") : null; }
+  function reset() { built = null; }
+  return { show, view, snapshot, reset };
+})();
+
+/* StructDesign – UI */
+(() => {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const toast = (m, bad) => { const t = $("#toast"); t.textContent = m; t.className = "show" + (bad ? " bad" : ""); clearTimeout(t._h); t._h = setTimeout(() => t.className = "", 3800); };
+
+  // ------------------------------------------------------------------ state
+  const DEF = () => ({
+    v: 1,
+    info: { name: "New project", client: "", location: "", company: "Urban Forge Construction Limited", address: "P. O. Box 4367-30100, Eldoret, Kenya",
+            phone: "Tel 0723385748 / 0715276999", engineer: "Eng. Gasaya W.", engineer2: "Eng. Hezron K.", date: new Date().toISOString().slice(0, 10) },
+    code: "EC2", mat: { fck: 25, fyk: 500, fcu: 30, fy: 500, cs: 25, cb: 30 },
+    levels: [{ name: "First floor", kind: "floor", h: 150, fin: 1.5, part: 1.0, qk: 1.5, ext: 10.0, int: 8.9, H: 3.0 },
+             { name: "Roof", kind: "roof", h: 150, fin: 2.1, part: 0, qk: 1.5, ext: 4.3, int: 0, H: 3.0 }],
+    balu: 0.5, maxSpan: 6000, colMin: 225, beta: 0.85, beamMinH: 450, slabMaxS: 250,
+    gx: [0, 4000, 8000], gy: [0, 4000, 8000], cols: {}, beams: {}, cells: {}, rooms: [], below: null,
+    img: null, imgBelow: null, aiNotes: ""
+  });
+  let P = DEF();
+  try { const s = localStorage.getItem("sd_project"); if (s) P = Object.assign(DEF(), JSON.parse(s)); } catch (e) {}
+  let D = null, SHEETS_CACHE = null, CALC_CACHE = null, dirty = true;
+  const save = () => {
+    dirty = true;
+    try { localStorage.setItem("sd_project", JSON.stringify(P)); }
+    catch (e) { try { const c = Object.assign({}, P, { img: null, imgBelow: null }); localStorage.setItem("sd_project", JSON.stringify(c)); } catch (e2) {} }
+  };
+
+  // ------------------------------------------------------------------ platform (Claude app vs installed app)
+  let sampleFn = null, sampleImages = false, downloads = null;
+  if (window.claude && window.claude.use) {
+    window.claude.use("sample").then(async s => {
+      sampleFn = s;
+      if (s) { try { const l = await s.limits(); sampleImages = !!(l && l.images); } catch (e) {} }
+      renderAISource();
+    });
+    window.claude.use("downloads").then(d => { downloads = d; });
+  }
+  function renderAISource() {
+    const el = $("#aiSource");
+    if (sampleFn && sampleImages) { el.innerHTML = `<span class="ok">✔ Using Claude in this app — no API key needed.</span>`; $("#keyBox").hidden = true; }
+    else { el.innerHTML = `Uses your Anthropic API key (stored only on this device).`; $("#keyBox").hidden = false; }
+  }
+  async function saveFile(name, data, mime) {
+    if (downloads) {
+      try { await downloads.save({ filename: name, data }); toast("Saved " + name); return; }
+      catch (e) { if (e && e.code === "declined") return; toast("Download not available here: " + (e.code || e), true); return; }
+    }
+    const blob = data instanceof Blob ? data : new Blob([data], { type: mime || "application/octet-stream" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  }
+
+  // ------------------------------------------------------------------ tabs
+  function showTab(t) {
+    $$(".tab").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+    $$("section.pane").forEach(s => s.hidden = s.id !== "p-" + t);
+    if (t === "layout") drawEditor();
+    if (t === "loads") renderLoads();
+    if (t === "results") { runDesign(); renderResults(); }
+    if (t === "drawings") { runDesign(); renderSheets(); }
+    if (t === "calcs") { runDesign(); renderCalcs(); }
+    if (t === "model") { runDesign(); render3D(); }
+    try { localStorage.setItem("sd_tab", t); } catch (e) {}
+  }
+  $$(".tab").forEach(b => b.onclick = () => showTab(b.dataset.t));
+
+  // ------------------------------------------------------------------ import drawings
+  const slots = { plan: { blob: null, w: 0, h: 0, url: null }, below: { blob: null, w: 0, h: 0, url: null } };
+  let activeSlot = "plan";
+  $$(".drop").forEach(d => {
+    d.onclick = () => { activeSlot = d.dataset.slot; $$(".drop").forEach(x => x.classList.toggle("act", x === d)); };
+    d.addEventListener("dragover", e => { e.preventDefault(); d.classList.add("over"); });
+    d.addEventListener("dragleave", () => d.classList.remove("over"));
+    d.addEventListener("drop", e => { e.preventDefault(); d.classList.remove("over"); const f = e.dataTransfer.files[0]; if (f) loadFile(f, d.dataset.slot); });
+  });
+  $$(".pick").forEach(i => i.onchange = () => { if (i.files[0]) loadFile(i.files[0], i.dataset.slot); i.value = ""; });
+  document.addEventListener("paste", e => {
+    const items = [...(e.clipboardData || {}).items || []];
+    const it = items.find(x => x.kind === "file");
+    if (it) { e.preventDefault(); loadFile(it.getAsFile(), activeSlot); }
+  });
+  $$(".pasteBtn").forEach(b => b.onclick = async (ev) => {
+    ev.stopPropagation();
+    const slot = b.dataset.slot;
+    try {
+      const items = await navigator.clipboard.read();
+      for (const it of items) { const t = it.types.find(x => x.startsWith("image/")); if (t) { loadFile(await it.getType(t), slot); return; } }
+      toast("No image on the clipboard", true);
+    } catch (e) { activeSlot = slot; toast("Press Ctrl+V (or long-press → Paste) to paste the drawing"); }
+  });
+
+  async function loadFile(file, slot) {
+    try {
+      $("#st-" + slot).textContent = "Loading…";
+      let canvas;
+      if (file.type === "application/pdf" || /\.pdf$/i.test(file.name || "")) {
+        if (!window.pdfjsLib) throw new Error("PDF reader not loaded (needs internet the first time)");
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+        let pg = 1;
+        pg = Math.min(Math.max(parseInt($("#pg-" + slot).value || "1", 10) || 1, 1), pdf.numPages);
+        if (pdf.numPages > 1) toast(`PDF has ${pdf.numPages} pages – showing page ${pg} (change "PDF page" and load again for another)`);
+        const page = await pdf.getPage(pg);
+        const vp0 = page.getViewport({ scale: 1 }), sc = 2400 / Math.max(vp0.width, vp0.height);
+        const vp = page.getViewport({ scale: sc });
+        canvas = document.createElement("canvas"); canvas.width = vp.width; canvas.height = vp.height;
+        const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      } else {
+        const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+        canvas = document.createElement("canvas"); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0);
+      }
+      setSlotCanvas(slot, canvas);
+    } catch (e) { $("#st-" + slot).textContent = "Could not read file: " + (e.message || e); }
+  }
+  function setSlotCanvas(slot, canvas) {
+    slots[slot].full = canvas; slots[slot].crop = null;
+    showPreview(slot);
+  }
+  // preview with drag-to-crop
+  function showPreview(slot) {
+    const S = slots[slot], cv = S.full, box = $("#pv-" + slot);
+    box.innerHTML = "";
+    const c = document.createElement("canvas"); const sc = Math.min(1, 900 / cv.width);
+    c.width = cv.width * sc; c.height = cv.height * sc; c.getContext("2d").drawImage(cv, 0, 0, c.width, c.height);
+    c.className = "pvc"; box.appendChild(c);
+    const sel = document.createElement("div"); sel.className = "sel"; box.appendChild(sel);
+    let st = null;
+    const pt = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
+    c.onpointerdown = e => { st = pt(e); c.setPointerCapture(e.pointerId); };
+    c.onpointermove = e => {
+      if (!st) return; const p = pt(e), r = c.getBoundingClientRect(), br = box.getBoundingClientRect();
+      const x0 = Math.min(st[0], p[0]), y0 = Math.min(st[1], p[1]), x1 = Math.max(st[0], p[0]), y1 = Math.max(st[1], p[1]);
+      Object.assign(sel.style, { display: "block", left: (r.left - br.left + x0 * r.width) + "px", top: (r.top - br.top + y0 * r.height) + "px", width: ((x1 - x0) * r.width) + "px", height: ((y1 - y0) * r.height) + "px" });
+      S.crop = [x0, y0, x1, y1];
+    };
+    c.onpointerup = () => { st = null; if (S.crop && (S.crop[2] - S.crop[0] < 0.03 || S.crop[3] - S.crop[1] < 0.03)) { S.crop = null; sel.style.display = "none"; } updSt(slot); };
+    updSt(slot);
+  }
+  function updSt(slot) {
+    const S = slots[slot];
+    $("#st-" + slot).textContent = S.full ? `${S.full.width}×${S.full.height}px loaded${S.crop ? " · cropped to selection" : " · drag on the picture to crop to one plan"}` : "";
+  }
+  // prepare JPEG for AI (≤1.15 MP so the platform does not downsize further)
+  async function prepImage(slot) {
+    const S = slots[slot]; if (!S.full) return null;
+    const cv = S.full, cr = S.crop || [0, 0, 1, 1];
+    const sx = cr[0] * cv.width, sy = cr[1] * cv.height, sw = (cr[2] - cr[0]) * cv.width, sh = (cr[3] - cr[1]) * cv.height;
+    const k = Math.min(1, Math.sqrt(1.15e6 / (sw * sh)), 1568 / Math.max(sw, sh));
+    const o = document.createElement("canvas"); o.width = Math.round(sw * k); o.height = Math.round(sh * k);
+    const ctx = o.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, o.width, o.height); ctx.drawImage(cv, sx, sy, sw, sh, 0, 0, o.width, o.height);
+    const blob = await new Promise(r => o.toBlob(r, "image/jpeg", 0.9));
+    return { blob, w: o.width, h: o.height, url: o.toDataURL("image/jpeg", 0.75) };
+  }
+
+  // ------------------------------------------------------------------ AI reading
+  function aiPrompt(w, h, below) {
+    return `You are a structural engineer reading an architectural FLOOR PLAN image (${w} x ${h} pixels) to set up a reinforced-concrete frame${below ? " — this image is the FLOOR BELOW; I only need its walls to place columns" : ""}.
+
+Reply with ONLY one JSON object, no other text, in exactly this shape:
+{"grid_x_mm":[0,4950,11800],"grid_y_mm":[0,3950,9800],
+ "walls":[{"dir":"h","y_mm":0,"x1_mm":0,"x2_mm":11800,"t_mm":200},{"dir":"v","x_mm":0,"y1_mm":0,"y2_mm":9800,"t_mm":200}],
+ "voids":[{"x1_mm":6400,"y1_mm":6500,"x2_mm":8850,"y2_mm":9800,"label":"stair"}],
+ "balconies":[{"x1_mm":-1800,"y1_mm":0,"x2_mm":0,"y2_mm":3950}],
+ "outside":[{"x1_mm":-1800,"y1_mm":3950,"x2_mm":0,"y2_mm":9800}],
+ "rooms":[{"name":"Master bedroom","x_mm":2400,"y_mm":2000}],
+ "image_px":{"left":120,"right":1180,"top":95,"bottom":890},
+ "overall_mm":{"width":11800,"depth":9800},
+ "notes":"..."}
+
+Rules:
+1. Units are millimetres. ORIGIN (0,0) = the CENTRELINE of the outer wall at the TOP-LEFT corner of the main building as drawn. x increases to the right, y increases DOWNWARD (image orientation). Balconies or porches left of / above the origin have negative values.
+2. Read the WRITTEN DIMENSIONS on the drawing and add up dimension chains. Only estimate from pixels when no dimension is written (a door leaf is about 900 mm). Measure to wall centrelines (half the wall thickness in from the outer face of external walls).
+3. "walls": every masonry wall as a CENTRELINE segment. Horizontal walls: dir "h" with y_mm, x1_mm, x2_mm. Vertical walls: dir "v" with x_mm, y1_mm, y2_mm. A wall with doors or windows in it is still ONE continuous wall. Ignore furniture, door swings, hatching, dimension lines, fixtures, and thin partitions such as shower screens. Walls that line up within 150 mm should share the same coordinate.
+4. "grid_x_mm" / "grid_y_mm": every distinct wall-centreline coordinate (and the outer edges of balconies/porches), sorted.
+5. "voids": stair wells and double-height openings where there is no floor slab at this level. "balconies": balcony/terrace/porch-roof slabs outside the main walls. "outside": rectangles inside the overall grid extents that are not part of the building (e.g. the empty corners of an L-shaped house).
+6. "image_px": pixel coordinates in THIS image of the vertical lines x = min(grid_x_mm) and x = max(grid_x_mm), and the horizontal lines y = min(grid_y_mm) and y = max(grid_y_mm).
+7. "notes": say which plan you read if the sheet shows more than one, and anything you were unsure about.`;
+  }
+  function parseJSON(t) {
+    try { return JSON.parse(t); } catch (e) {}
+    const m = t.match(/```(?:json)?\s*([\s\S]*?)```/); if (m) try { return JSON.parse(m[1]); } catch (e) {}
+    const a = t.indexOf("{"), b = t.lastIndexOf("}"); if (a >= 0 && b > a) return JSON.parse(t.slice(a, b + 1));
+    throw new Error("AI reply was not valid JSON");
+  }
+  async function askAI(promptText, img) {
+    if (sampleFn && sampleImages) {
+      return await sampleFn.json(promptText, { images: [img.blob], modelTier: "complex" });
+    }
+    const key = ($("#apikey").value || "").trim();
+    if (!key) throw new Error("Enter your Anthropic API key below — or open the app inside Claude.");
+    try { localStorage.setItem("sd_key", key); } catch (e) {}
+    const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(",")[1]); fr.readAsDataURL(img.blob); });
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: $("#model").value || "claude-sonnet-5-5", max_tokens: 8000,
+        messages: [{ role: "user", content: [{ type: "image", source: { type: "base64", media_type: "image/jpeg", data: b64 } }, { type: "text", text: promptText }] }] })
+    });
+    const j = await res.json();
+    if (!res.ok) throw new Error((j.error && j.error.message) || ("HTTP " + res.status));
+    return parseJSON(j.content.map(c => c.text || "").join(""));
+  }
+  $("#readBtn").onclick = async () => {
+    const st = $("#aiStatus");
+    if (!slots.plan.full) { toast("Add the floor plan first", true); return; }
+    $("#readBtn").disabled = true;
+    try {
+      st.textContent = "Reading the floor plan… (this can take up to a minute)";
+      const img = await prepImage("plan");
+      const J = await askAI(aiPrompt(img.w, img.h, false), img);
+      let below = null, imgB = null, JB = null;
+      if (slots.below.full) {
+        st.textContent = "Reading the floor below…";
+        imgB = await prepImage("below");
+        JB = await askAI(aiPrompt(imgB.w, imgB.h, true), imgB);
+        below = JB.walls || [];
+      }
+      const N = SD.fromAI(J, below);
+      if (N.gx.length < 2 || N.gy.length < 2) throw new Error("No grid found — try cropping to one plan");
+      Object.assign(P, { gx: N.gx, gy: N.gy, beams: N.beams, cells: N.cells, rooms: N.rooms, below: below });
+      P.img = { src: img.url, w: img.w, h: img.h, px: J.image_px || null, op: 0.45 };
+      P.imgBelow = imgB && JB ? { src: imgB.url, w: imgB.w, h: imgB.h, px: JB.image_px || null } : null;
+      SD.autoColumns(P);
+      P.aiNotes = (J.notes || "") + (JB && JB.notes ? "\nFloor below: " + JB.notes : "");
+      save();
+      st.innerHTML = `✔ Read ${N.gx.length}×${N.gy.length} grid lines, ${(J.walls || []).length} walls${below ? `, ${below.length} walls below` : ""}. <b>Check the layout next.</b>`;
+      $("#aiNotes").textContent = P.aiNotes;
+      showTab("layout");
+    } catch (e) {
+      const code = e && e.code;
+      st.textContent = "AI reading failed: " + (code === "not_granted" ? "permission was declined" : (e.message || code || e));
+    } finally { $("#readBtn").disabled = false; }
+  };
+  $("#demoBtn").onclick = () => {
+    const { J, below } = demoProject();
+    const N = SD.fromAI(J, below);
+    P = Object.assign(DEF(), { gx: N.gx, gy: N.gy, beams: N.beams, cells: N.cells, rooms: N.rooms, below });
+    P.info.name = "Proposed residence (demo)"; P.info.client = "Mr Mbaka"; P.info.location = "Eldoret";
+    P.maxSpan = 6500;
+    SD.autoColumns(P); save(); toast("Demo project loaded"); showTab("layout");
+  };
+  $("#blankBtn").onclick = () => {
+    const gx = $("#blankX").value.split(/[,\s]+/).map(Number).filter(Number.isFinite), gy = $("#blankY").value.split(/[,\s]+/).map(Number).filter(Number.isFinite);
+    if (gx.length < 2 || gy.length < 2) { toast("Enter at least two grid positions each way", true); return; }
+    P.gx = gx.sort((a, b) => a - b); P.gy = gy.sort((a, b) => a - b); P.cols = {}; P.beams = {}; P.cells = {}; P.below = null; P.img = null;
+    for (let i = 0; i < P.gx.length; i++) for (let j = 0; j < P.gy.length; j++) P.cols[SD.key(i, j)] = 1;
+    for (let j = 0; j < P.gy.length; j++) for (let i = 0; i + 1 < P.gx.length; i++) P.beams[SD.key("h", i, j)] = { wall: j === 0 || j === P.gy.length - 1 ? 1 : 0 };
+    for (let i = 0; i < P.gx.length; i++) for (let j = 0; j + 1 < P.gy.length; j++) P.beams[SD.key("v", i, j)] = { wall: i === 0 || i === P.gx.length - 1 ? 1 : 0 };
+    save(); showTab("layout");
+  };
+
+  // ------------------------------------------------------------------ layout editor
+  let tool = "col", zoom = 1;
+  $$(".tool").forEach(b => b.onclick = () => { tool = b.dataset.tool; $$(".tool").forEach(x => x.classList.toggle("on", x === b)); });
+  $("#zin").onclick = () => { zoom = Math.min(6, zoom * 1.4); drawEditor(); };
+  $("#zout").onclick = () => { zoom = Math.max(0.6, zoom / 1.4); drawEditor(); };
+  $("#autoCols").onclick = () => { SD.autoColumns(P); save(); drawEditor(); toast("Columns proposed — check them against openings"); };
+  $("#op").oninput = e => { if (P.img) { P.img.op = +e.target.value; save(); drawEditor(); } };
+  $("#showBelow").onchange = drawEditor;
+  $("#applyGrid").onclick = () => {
+    const gx = $("#gxIn").value.split(/[,\s]+/).map(Number).filter(Number.isFinite), gy = $("#gyIn").value.split(/[,\s]+/).map(Number).filter(Number.isFinite);
+    if (gx.length < 2 || gy.length < 2) { toast("Need at least two lines each way", true); return; }
+    SD.regrid(P, gx, gy); save(); drawEditor(); toast("Grid updated");
+  };
+  function drawEditor() {
+    $("#gxIn").value = P.gx.join(", "); $("#gyIn").value = P.gy.join(", ");
+    $("#op").value = P.img ? P.img.op : 0.45;
+    const gx = P.gx, gy = P.gy, x0 = gx[0], x1 = gx[gx.length - 1], y0 = gy[0], y1 = gy[gy.length - 1];
+    const pad = Math.max(x1 - x0, y1 - y0) * 0.08 + 800;
+    const vb = [x0 - pad, y0 - pad, x1 - x0 + 2 * pad, y1 - y0 + 2 * pad];
+    const fs = Math.max(x1 - x0, y1 - y0) / 55;
+    const o = [];
+    if (P.img && P.img.px && $("#showImg").checked) {
+      const px = P.img.px, sx = (x1 - x0) / Math.max(px.right - px.left, 1), sy = (y1 - y0) / Math.max(px.bottom - px.top, 1);
+      o.push(`<image href="${P.img.src}" x="${x0 - px.left * sx}" y="${y0 - px.top * sy}" width="${P.img.w * sx}" height="${P.img.h * sy}" opacity="${P.img.op}" preserveAspectRatio="none"/>`);
+    }
+    for (let i = 0; i + 1 < gx.length; i++) for (let j = 0; j + 1 < gy.length; j++) {
+      const t = SD.cellT(P, i, j), col = { slab: "rgba(120,170,230,0.18)", void: "rgba(250,250,250,0.6)", balcony: "rgba(140,120,230,0.30)", none: "rgba(0,0,0,0)" }[t];
+      o.push(`<rect class="cell" data-k="${i},${j}" x="${gx[i]}" y="${gy[j]}" width="${gx[i + 1] - gx[i]}" height="${gy[j + 1] - gy[j]}" fill="${col}" stroke="#bcd" stroke-width="${fs / 12}"/>`);
+      if (t === "void") o.push(`<path d="M${gx[i]},${gy[j]}L${gx[i + 1]},${gy[j + 1]}M${gx[i + 1]},${gy[j]}L${gx[i]},${gy[j + 1]}" stroke="#999" stroke-width="${fs / 10}"/>`);
+      if (t === "none") o.push(`<rect x="${gx[i]}" y="${gy[j]}" width="${gx[i + 1] - gx[i]}" height="${gy[j + 1] - gy[j]}" fill="url(#hatchN)"/>`);
+    }
+    gx.forEach((v, i) => o.push(`<line x1="${v}" y1="${y0 - pad * 0.7}" x2="${v}" y2="${y1 + pad * 0.3}" stroke="#7a8" stroke-width="${fs / 12}" stroke-dasharray="${fs} ${fs / 2}"/><text x="${v}" y="${y0 - pad * 0.75}" font-size="${fs}" text-anchor="middle" fill="#264">${SHEETS.letters(i)}</text>`));
+    gy.forEach((v, j) => o.push(`<line x1="${x0 - pad * 0.7}" y1="${v}" x2="${x1 + pad * 0.3}" y2="${v}" stroke="#7a8" stroke-width="${fs / 12}" stroke-dasharray="${fs} ${fs / 2}"/><text x="${x0 - pad * 0.78}" y="${v + fs / 3}" font-size="${fs}" text-anchor="middle" fill="#264">${j + 1}</text>`));
+    for (let i = 0; i + 1 < gx.length; i++) o.push(`<text x="${(gx[i] + gx[i + 1]) / 2}" y="${y0 - pad * 0.35}" font-size="${fs * 0.75}" text-anchor="middle" fill="#555">${Math.round(gx[i + 1] - gx[i])}</text>`);
+    for (let j = 0; j + 1 < gy.length; j++) o.push(`<text x="${x0 - pad * 0.35}" y="${(gy[j] + gy[j + 1]) / 2}" font-size="${fs * 0.75}" text-anchor="middle" fill="#555" transform="rotate(-90 ${x0 - pad * 0.35} ${(gy[j] + gy[j + 1]) / 2})">${Math.round(gy[j + 1] - gy[j])}</text>`);
+    if (P.below && $("#showBelow").checked) for (const w of P.below)
+      o.push(w.dir === "h" ? `<line x1="${w.x1_mm}" y1="${w.y_mm}" x2="${w.x2_mm}" y2="${w.y_mm}" stroke="#e67e22" stroke-width="${fs / 5}" stroke-dasharray="${fs / 2} ${fs / 3}"/>`
+                           : `<line x1="${w.x_mm}" y1="${w.y1_mm}" x2="${w.x_mm}" y2="${w.y2_mm}" stroke="#e67e22" stroke-width="${fs / 5}" stroke-dasharray="${fs / 2} ${fs / 3}"/>`);
+    // all segments (clickable)
+    for (let j = 0; j < gy.length; j++) for (let i = 0; i + 1 < gx.length; i++) seg("h", i, j, gx[i], gy[j], gx[i + 1], gy[j]);
+    for (let i = 0; i < gx.length; i++) for (let j = 0; j + 1 < gy.length; j++) seg("v", i, j, gx[i], gy[j], gx[i], gy[j + 1]);
+    function seg(d, i, j, ax, ay, bx, by) {
+      const k = SD.key(d, i, j), b = P.beams[k];
+      o.push(`<line class="seg" data-k="${k}" x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${b ? (b.wall ? "#1f4e78" : "#4a90d9") : "rgba(0,0,0,0.04)"}" stroke-width="${b ? fs / 2.2 : fs / 1.5}" ${b && !b.wall ? `stroke-dasharray="${fs / 1.5} ${fs / 3}"` : ""}/>`);
+    }
+    for (let i = 0; i < gx.length; i++) for (let j = 0; j < gy.length; j++) {
+      const c = P.cols[SD.key(i, j)], z = fs * 0.9;
+      o.push(c ? `<rect class="node" data-k="${i},${j}" x="${gx[i] - z / 2}" y="${gy[j] - z / 2}" width="${z}" height="${z}" fill="#111"/>`
+               : `<circle class="node" data-k="${i},${j}" cx="${gx[i]}" cy="${gy[j]}" r="${fs / 3}" fill="#fff" stroke="#999" stroke-width="${fs / 15}"/>`);
+    }
+    for (const r of P.rooms || []) o.push(`<text x="${r.x_mm}" y="${r.y_mm}" font-size="${fs * 0.7}" text-anchor="middle" fill="#345" pointer-events="none">${esc(r.name)}</text>`);
+    const svg = `<svg id="ed" xmlns="http://www.w3.org/2000/svg" viewBox="${vb.join(" ")}" style="width:${100 * zoom}%">
+      <defs><pattern id="hatchN" width="${fs}" height="${fs}" patternUnits="userSpaceOnUse"><path d="M0,${fs}L${fs},0" stroke="#ddd" stroke-width="${fs / 12}"/></pattern></defs>${o.join("")}</svg>`;
+    $("#edwrap").innerHTML = svg;
+    $("#edInfo").textContent = `${gx.length} × ${gy.length} grid · ${Object.values(P.cols).filter(Boolean).length} columns · ${Object.keys(P.beams).length} beam segments`;
+    const ed = $("#ed");
+    ed.onclick = e => {
+      const pt = ed.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+      const m = pt.matrixTransform(ed.getScreenCTM().inverse()), X = m.x, Y = m.y;
+      if (tool === "col") {
+        let best = null; gx.forEach((x, i) => gy.forEach((y, j) => { const d = Math.hypot(x - X, y - Y); if (!best || d < best.d) best = { d, i, j }; }));
+        if (best && best.d < fs * 3) { const k = SD.key(best.i, best.j); if (P.cols[k]) delete P.cols[k]; else P.cols[k] = 1; }
+      } else if (tool === "beam" || tool === "wall") {
+        let best = null;
+        const test = (d, i, j, ax, ay, bx, by) => {
+          const L2 = (bx - ax) ** 2 + (by - ay) ** 2, t = Math.max(0, Math.min(1, ((X - ax) * (bx - ax) + (Y - ay) * (by - ay)) / L2));
+          const dd = Math.hypot(X - (ax + t * (bx - ax)), Y - (ay + t * (by - ay))); if (!best || dd < best.dd) best = { dd, k: SD.key(d, i, j) };
+        };
+        for (let j = 0; j < gy.length; j++) for (let i = 0; i + 1 < gx.length; i++) test("h", i, j, gx[i], gy[j], gx[i + 1], gy[j]);
+        for (let i = 0; i < gx.length; i++) for (let j = 0; j + 1 < gy.length; j++) test("v", i, j, gx[i], gy[j], gx[i], gy[j + 1]);
+        if (best && best.dd < fs * 2.5) {
+          if (tool === "beam") { if (P.beams[best.k]) delete P.beams[best.k]; else P.beams[best.k] = { wall: 0 }; }
+          else { if (!P.beams[best.k]) P.beams[best.k] = { wall: 1 }; else P.beams[best.k].wall = P.beams[best.k].wall ? 0 : 1; }
+        }
+      } else if (tool === "cell") {
+        for (let i = 0; i + 1 < gx.length; i++) for (let j = 0; j + 1 < gy.length; j++) if (X > gx[i] && X < gx[i + 1] && Y > gy[j] && Y < gy[j + 1]) {
+          const order = ["slab", "void", "balcony", "none"], t = SD.cellT(P, i, j), n = order[(order.indexOf(t) + 1) % 4];
+          if (n === "slab") delete P.cells[SD.key(i, j)]; else P.cells[SD.key(i, j)] = n;
+        }
+      }
+      save(); drawEditor();
+    };
+  }
+  $("#showImg").onchange = drawEditor;
+
+  // ------------------------------------------------------------------ loads & settings
+  function renderLoads() {
+    const I = P.info;
+    const f = (id, label, v, type = "text") => `<label>${label}<input data-f="${id}" type="${type}" value="${esc(v)}"></label>`;
+    $("#infoForm").innerHTML = [f("info.name", "Project", I.name), f("info.client", "Client", I.client), f("info.location", "Location", I.location), f("info.company", "Company", I.company),
+      f("info.address", "Address", I.address), f("info.phone", "Telephone", I.phone), f("info.engineer", "Designed by", I.engineer), f("info.engineer2", "Checked / drawn by", I.engineer2), f("info.date", "Date", I.date, "date")].join("");
+    $("#codeSel").value = P.code;
+    $("#matForm").innerHTML = (P.code === "EC2" ? [f("mat.fck", "Concrete fck (MPa)", P.mat.fck, "number"), f("mat.fyk", "Steel fyk (MPa)", P.mat.fyk, "number")]
+      : [f("mat.fcu", "Concrete fcu (MPa)", P.mat.fcu, "number"), f("mat.fy", "Steel fy (MPa)", P.mat.fy, "number")]).concat([f("mat.cs", "Slab cover (mm)", P.mat.cs, "number"), f("mat.cb", "Beam/column cover (mm)", P.mat.cb, "number"),
+      f("maxSpan", "Max beam span before adding a column (mm)", P.maxSpan, "number"), f("colMin", "Minimum column size (mm)", P.colMin, "number"),
+      f("beta", "Column effective length factor β", P.beta, "number"), f("beamMinH", "Minimum beam depth (mm)", P.beamMinH, "number"),
+      f("slabMaxS", "Max slab bar spacing (mm)", P.slabMaxS, "number"), f("balu", "Balustrade load (kN/m)", P.balu, "number")]).join("");
+    const lv = P.levels.map((l, i) => `<tr><td><input data-l="${i}.name" value="${esc(l.name)}"></td>
+      <td><select data-l="${i}.kind"><option ${l.kind === "floor" ? "selected" : ""}>floor</option><option ${l.kind === "roof" ? "selected" : ""}>roof</option></select></td>
+      ${["h", "fin", "part", "qk", "ext", "int", "H"].map(k => `<td><input type="number" step="any" data-l="${i}.${k}" value="${l[k]}"></td>`).join("")}
+      <td><button class="del" data-del="${i}">✕</button></td></tr>`).join("");
+    $("#lvlBody").innerHTML = lv;
+    $$("#p-loads [data-f]").forEach(inp => inp.onchange = () => {
+      const [a, b] = inp.dataset.f.split("."); const v = inp.type === "number" ? +inp.value : inp.value;
+      if (b) P[a][b] = v; else P[a] = v; save();
+    });
+    $$("#lvlBody [data-l]").forEach(inp => inp.onchange = () => {
+      const [i, k] = inp.dataset.l.split("."); P.levels[+i][k] = (inp.type === "number") ? +inp.value : inp.value; save();
+    });
+    $$("#lvlBody [data-del]").forEach(b => b.onclick = () => { if (P.levels.length > 1) { P.levels.splice(+b.dataset.del, 1); save(); renderLoads(); } });
+  }
+  $("#codeSel").onchange = e => { P.code = e.target.value; save(); renderLoads(); };
+  $("#addLvl").onclick = () => { P.levels.splice(P.levels.length - 1, 0, Object.assign({}, P.levels[0], { name: `Floor ${P.levels.length}` })); save(); renderLoads(); };
+
+  // ------------------------------------------------------------------ design + results
+  function runDesign() {
+    if (!dirty && D) return;
+    try { D = SD.design(JSON.parse(JSON.stringify(P))); SHEETS_CACHE = null; CALC_CACHE = null; VIEW3D.reset(); dirty = false; }
+    catch (e) { console.error(e); D = null; toast("Design failed: " + e.message, true); }
+  }
+  const badge = s => `<span class="b ${s}">${s}</span>`;
+  function renderResults() {
+    const el = $("#results");
+    if (!D) { el.innerHTML = "<p>No design yet.</p>"; return; }
+    const all = [].concat(...D.levels.map(L => L.panels.map(p => p.status)), ...D.levels.map(L => L.runs.map(r => r.status)), D.cols.map(c => c.status));
+    const cnt = s => all.filter(x => x === s).length;
+    let h = `<div class="sum"><div><b>${D.levels.reduce((s, L) => s + L.panels.length, 0)}</b> slab panels</div><div><b>${D.levels.reduce((s, L) => s + L.runs.length, 0)}</b> beams</div><div><b>${D.cols.length}</b> columns</div>
+      <div class="ok">${cnt("OK")} OK</div><div class="ck">${cnt("CHECK")} check</div><div class="bad">${cnt("REVISE")} revise</div></div>`;
+    const W = [].concat(D.warn, ...D.levels.map(L => [].concat(...L.panels.map(p => p.warn.map(w => `${p.mark}: ${w}`)), ...L.runs.map(r => r.warn.map(w => `${r.mark}: ${w}`)))));
+    if (W.length) h += `<details open class="warn"><summary>${W.length} items to check</summary><ul>${W.map(w => `<li>${esc(w)}</li>`).join("")}</ul></details>`;
+    for (const L of D.levels) {
+      h += `<h3>${esc(L.lvl.name)} — slabs</h3><div class="tw"><table><tr><th>Mark</th><th>Size (m)</th><th>h</th><th>Classification</th><th>Bottom ↔</th><th>Bottom ↕</th><th>Top</th><th>l/d</th><th></th></tr>`;
+      for (const p of L.panels) {
+        if (!p.d) { h += `<tr><td>${p.mark}</td><td colspan="7">${esc(p.cls)}</td><td>${badge(p.status)}</td></tr>`; continue; }
+        const R = p.d.rows, bx = p.kind === "cant" ? R.sxp : (p.shortAlongX ? R.sxp : R.syp), by = p.kind === "cant" ? R.syp : (p.shortAlongX ? R.syp : R.sxp);
+        const top = p.kind === "cant" ? R.sxn : [R.sxn, R.syn].filter(x => x && x.bars).sort((a, b) => b.bars.A - a.bars.A)[0];
+        h += `<tr><td><b>${p.mark}</b></td><td>${p.Lx.toFixed(2)}×${p.Ly.toFixed(2)}</td><td>${p.d.h}</td><td>${esc(p.cls)}${p.note ? `<br><small>${esc(p.note)}</small>` : ""}</td><td>${SD.st(bx.bars)}</td><td>${SD.st(by.bars)}</td><td>${top ? SD.st(top.bars) : "–"}</td><td>${p.d.ldAct.toFixed(1)}/${p.d.ldAllow > 60 ? ">60" : p.d.ldAllow.toFixed(1)}</td><td>${badge(p.status)}</td></tr>`;
+      }
+      h += `</table></div><h3>${esc(L.lvl.name)} — beams</h3><div class="tw"><table><tr><th>Mark</th><th>Type</th><th>Size</th><th>Span</th><th>L</th><th>M+ / M− (kNm)</th><th>V</th><th>Bottom</th><th>Top L / R</th><th>Links</th><th></th></tr>`;
+      for (const r of L.runs) {
+        if (!r.des) { h += `<tr><td>${r.mark}</td><td colspan="9">${esc(r.warn.join("; "))}</td><td>${badge("REVISE")}</td></tr>`; continue; }
+        r.des.spans.forEach((s, k) => h += `<tr class="${k ? "" : "first"}"><td>${k ? "" : `<b>${r.mark}</b>`}</td><td>${k ? "" : r.type}</td><td>${k ? "" : r.des.bw + "×" + r.des.h}</td><td>${s.kind === "span" ? "span" : "cantilever"}</td><td>${s.L.toFixed(2)}</td><td>${s.Mpos.toFixed(0)} / ${Math.max(s.MnL, s.MnR).toFixed(0)}</td><td>${s.V.toFixed(0)}</td><td>${SD.bt(s.bot)}${s.bot.layers > 1 ? " ²" : ""}</td><td>${SD.bt(s.topL)} / ${SD.bt(s.topR)}</td><td>H8@${s.links.s}</td><td>${k ? "" : badge(r.status)}</td></tr>`);
+      }
+      h += `</table></div>`;
+    }
+    h += `<h3>Columns</h3><div class="tw"><table><tr><th>Col</th><th>Grid</th><th>Size</th><th>Storey</th><th>NEd</th><th>Class</th><th>Bars</th><th>Util.</th><th>Gk+Qk at base</th><th></th></tr>`;
+    for (const c of D.cols) {
+      if (!c.res) { h += `<tr><td>${c.name}</td><td>${SHEETS.letters(c.i)}/${c.j + 1}</td><td colspan="7">no section ≤ 600 works – add columns/beams</td><td>${badge("REVISE")}</td></tr>`; continue; }
+      c.res.des.forEach((d, k) => h += `<tr class="${k ? "" : "first"}"><td>${k ? "" : `<b>${c.name}</b>`}</td><td>${k ? "" : SHEETS.letters(c.i) + "/" + (c.j + 1)}</td><td>${k ? "" : c.res.b + "×" + c.res.b}</td><td>below ${esc(d.level)}</td><td>${d.N.toFixed(0)}</td><td>${d.ax.slender || d.ay.slender ? "Long (slender)" : "Short"}</td><td>${d.nb}H${d.phi}</td><td>${d.util.toFixed(2)}</td><td>${k ? (d.Gk + d.Qk).toFixed(0) : (d.Gk + d.Qk).toFixed(0)}</td><td>${k ? "" : badge(c.status)}</td></tr>`);
+    }
+    h += `</table></div><p class="small">Column moments use a sub-frame approximation; slab loads reach beams by tributary widths; coefficient methods follow BS 8110 tables (also used for EC2 design in UK practice). Results must be checked by a registered engineer.</p>`;
+    el.innerHTML = h;
+  }
+  $("#csvBtn").onclick = () => {
+    runDesign(); if (!D) return;
+    const rows = [["Type", "Mark", "Level", "Size", "Item", "L(m)", "Bottom", "Top L", "Top R", "Links", "Status"]];
+    D.levels.forEach(L => {
+      L.panels.forEach(p => { if (p.d) { const R = p.d.rows; rows.push(["Slab", p.mark, L.lvl.name, `${p.Lx.toFixed(2)}x${p.Ly.toFixed(2)} h${p.d.h}`, p.cls, "", SD.st(R.sxp.bars), SD.st(R.syp.bars), SD.st((R.sxn && R.sxn.bars) ? R.sxn.bars : null), "", p.status]); } });
+      L.runs.forEach(r => r.des && r.des.spans.forEach(s => rows.push(["Beam", r.mark, L.lvl.name, `${r.des.bw}x${r.des.h}`, r.type + " " + s.kind, s.L.toFixed(2), SD.bt(s.bot), SD.bt(s.topL), SD.bt(s.topR), "H8@" + s.links.s, r.status])));
+    });
+    D.cols.forEach(c => c.res && c.res.des.forEach(d => rows.push(["Column", c.name, d.level, `${c.res.b}x${c.res.b}`, `N=${d.N.toFixed(0)} Gk=${d.Gk.toFixed(0)} Qk=${d.Qk.toFixed(0)}`, "", `${d.nb}H${d.phi}`, "", "", "", c.status])));
+    saveFile((P.info.name || "design").replace(/[^\w-]+/g, "_") + "_schedule.csv", rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(",")).join("\n"), "text/csv");
+  };
+
+  // ------------------------------------------------------------------ drawings
+  function sheets() { if (!SHEETS_CACHE && D) SHEETS_CACHE = SHEETS.all(P, D); return SHEETS_CACHE || []; }
+  function renderSheets() {
+    const S = sheets(), el = $("#sheets");
+    el.innerHTML = S.map((s, i) => `<div class="sheet"><div class="sh"><b>${s.no}</b> ${esc(s.title)} <button data-svg="${i}">SVG</button></div>${s.svg.replace(/width="420mm" height="297mm"/, 'width="100%"')}</div>`).join("");
+    $$("#sheets [data-svg]").forEach(b => b.onclick = () => { const s = S[+b.dataset.svg]; saveFile(`${s.no}_${s.title.replace(/[^\w-]+/g, "_")}.svg`, s.svg, "image/svg+xml"); });
+  }
+  async function svgToJpeg(svg, pxPerMm = 7) {
+    const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const c = document.createElement("canvas"); c.width = 420 * pxPerMm; c.height = 297 * pxPerMm;
+    const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    return c.toDataURL("image/jpeg", 0.92);
+  }
+  $("#pdfBtn").onclick = async () => {
+    runDesign(); const S = sheets(); if (!S.length) return;
+    if (!window.jspdf) { toast("PDF library not loaded (needs internet the first time)", true); return; }
+    $("#pdfBtn").disabled = true; $("#pdfBtn").textContent = "Building PDF…";
+    try {
+      const doc = new jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a3" });
+      for (let i = 0; i < S.length; i++) { if (i) doc.addPage("a3", "landscape"); doc.addImage(await svgToJpeg(S[i].svg), "JPEG", 0, 0, 420, 297); }
+      await saveFile((P.info.name || "structural").replace(/[^\w-]+/g, "_") + "_structural_drawings.pdf", doc.output("blob"), "application/pdf");
+    } catch (e) { toast("PDF failed: " + e.message, true); }
+    finally { $("#pdfBtn").disabled = false; $("#pdfBtn").textContent = "Drawings PDF (A3)"; }
+  };
+  // ------------------------------------------------------------------ calculations, Excel, 3D
+  const loadScript = (url, test) => new Promise((res, rej) => { if (test()) return res(); const s = document.createElement("script"); s.src = url; s.onload = res; s.onerror = () => rej(new Error("could not load " + url.split("/").pop() + " (needs internet the first time)")); document.head.appendChild(s); });
+  function calcs() { if (!CALC_CACHE && D) CALC_CACHE = CALC.all(P, D); return CALC_CACHE || []; }
+  function renderCalcs() {
+    const S = calcs(), sel = $("#calcSel"), cur = sel.value;
+    sel.innerHTML = S.map(s => `<option value="${s.id}">${s.status === "REVISE" ? "✘ " : s.status === "CHECK" ? "! " : ""}${esc(s.title)}</option>`).join("");
+    if (cur && S.some(s => s.id === cur)) sel.value = cur;
+    const sec = S.find(s => s.id === sel.value) || S[0];
+    $("#calcView").innerHTML = sec ? CALC.html(sec) : "";
+  }
+  $("#calcSel").onchange = renderCalcs;
+  $("#calcPdfBtn").onclick = async () => {
+    runDesign(); if (!D) return;
+    if (!window.jspdf) { toast("PDF library not loaded (needs internet the first time)", true); return; }
+    const doc = new jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    CALC.pdf(doc, P, calcs(), false);
+    await saveFile((P.info.name || "design").replace(/[^\w-]+/g, "_") + "_calculations.pdf", doc.output("blob"), "application/pdf");
+  };
+  $("#xlsBtn").onclick = async () => {
+    runDesign(); if (!D) return;
+    const b = $("#xlsBtn"); b.disabled = true; b.textContent = "Building workbook…";
+    try {
+      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js", () => window.ExcelJS);
+      const blob = await XLS.build(P, D);
+      await saveFile((P.info.name || "design").replace(/[^\w-]+/g, "_") + "_design.xlsx", blob, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    } catch (e) { toast("Excel export failed: " + e.message, true); }
+    finally { b.disabled = false; b.textContent = "Excel workbook (.xlsx)"; }
+  };
+  const m3 = () => ({ slabs: $("#m-slabs").checked, beams: $("#m-beams").checked, cols: $("#m-cols").checked, rebar: $("#m-rebar").checked });
+  async function render3D() { if (!D) return; try { await VIEW3D.show($("#view3d"), P, D, m3()); } catch (e) { $("#view3d").innerHTML = `<p style="padding:16px">${esc(e.message)}</p>`; } }
+  ["#m-slabs", "#m-beams", "#m-cols", "#m-rebar"].forEach(id => $(id).onchange = render3D);
+  $$("#p-model [data-v]").forEach(b => b.onclick = () => VIEW3D.view(b.dataset.v));
+  $("#pngBtn").onclick = async () => { const u = VIEW3D.snapshot(); if (!u) return; const blob = await (await fetch(u)).blob(); saveFile((P.info.name || "model").replace(/[^\w-]+/g, "_") + "_3D.png", blob, "image/png"); };
+  $("#pkgBtn").onclick = async () => {
+    runDesign(); const S = sheets(); if (!S.length) return;
+    if (!window.jspdf) { toast("PDF library not loaded (needs internet the first time)", true); return; }
+    const b = $("#pkgBtn"); b.disabled = true; b.textContent = "Building package…";
+    try {
+      const doc = new jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a3" });
+      for (let i = 0; i < S.length; i++) { if (i) doc.addPage("a3", "landscape"); doc.addImage(await svgToJpeg(S[i].svg), "JPEG", 0, 0, 420, 297); }
+      CALC.pdf(doc, P, calcs(), true);
+      await saveFile((P.info.name || "design").replace(/[^\w-]+/g, "_") + "_structural_package.pdf", doc.output("blob"), "application/pdf");
+    } catch (e) { toast("PDF failed: " + e.message, true); }
+    finally { b.disabled = false; b.textContent = "Full package PDF (drawings + calcs)"; }
+  };
+  $("#saveBtn").onclick = () => saveFile((P.info.name || "project").replace(/[^\w-]+/g, "_") + ".json", JSON.stringify(P), "application/json");
+  $("#openBtn").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { P = Object.assign(DEF(), JSON.parse(await f.text())); save(); toast("Project opened"); showTab("layout"); } catch (err) { toast("Not a project file", true); }
+    e.target.value = "";
+  };
+  $("#newBtn").onclick = () => {
+    const b = $("#newBtn");
+    if (!b.dataset.arm) { b.dataset.arm = 1; b.textContent = "Tap again to clear"; setTimeout(() => { delete b.dataset.arm; b.textContent = "New project"; }, 3000); return; }
+    delete b.dataset.arm; b.textContent = "New project"; P = DEF(); save(); showTab("drawing");
+  };
+
+  // ------------------------------------------------------------------ init
+  try { $("#apikey").value = localStorage.getItem("sd_key") || ""; } catch (e) {}
+  renderAISource();
+  $("#aiNotes").textContent = P.aiNotes || "";
+  let t0 = "drawing"; try { t0 = localStorage.getItem("sd_tab") || "drawing"; } catch (e) {}
+  showTab(t0);
+  if (!window.claude && "serviceWorker" in navigator && location.protocol === "https:") {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); const b = $("#installBtn"); b.hidden = false; b.onclick = () => { e.prompt(); b.hidden = true; }; });
+})();
+
+</script>
+</body></html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StructDesign – RC slabs, beams & columns</title>
+<meta name="theme-color" content="#1f4e78">
+<!--PWA-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--b:#1f4e78;--b2:#2e75b6;--bg:#eef2f6;--ok:#0a7a2f;--ck:#b36b00;--bad:#b00020}
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:#1b1b1b;font-size:15px}
+header{background:var(--b);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px} header .sub{font-size:12px;opacity:.85}
+header .sp{flex:1} header button{background:#fff2;color:#fff;border:1px solid #fff6}
+nav{display:flex;background:#fff;border-bottom:1px solid #d4dbe3;position:sticky;top:0;z-index:5;overflow-x:auto}
+.tab{flex:1;min-width:84px;border:0;background:none;padding:12px 6px;font-size:14px;color:#555;border-bottom:3px solid transparent;cursor:pointer}
+.tab.on{color:var(--b);border-bottom-color:var(--b);font-weight:600}
+main{max-width:1200px;margin:0 auto;padding:12px}
+.card{background:#fff;border-radius:10px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px #0001}
+.card h2{font-size:16px;margin:0 0 6px;color:var(--b)} .card p{margin:4px 0 8px;color:#444;font-size:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap} .row>.card{flex:1;min-width:280px}
+.drop{border:2px dashed #9fb3c8;border-radius:10px;padding:14px;text-align:center;background:#f7fafc;cursor:pointer}
+.drop.act{border-color:var(--b2);background:#eef6ff} .drop.over{background:#dceeff}
+.drop .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+button,.btn{background:var(--b2);color:#fff;border:0;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;display:inline-block}
+button:disabled{opacity:.5} button.sec,.btn.sec{background:#e4ebf2;color:#1b1b1b} label.btn input{display:none}
+.pv{position:relative;margin-top:8px} .pvc{max-width:100%;border:1px solid #ccd;touch-action:none;cursor:crosshair}
+.sel{position:absolute;border:2px solid #e67e22;background:#e67e2222;display:none;pointer-events:none}
+.st{font-size:12px;color:#555;margin-top:4px}
+input,select{font-size:14px;padding:7px 8px;border:1px solid #c5ced8;border-radius:6px;width:100%;background:#fff}
+label{display:block;font-size:12px;color:#555;margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 12px}
+.ok{color:var(--ok)} #aiStatus{margin-top:8px;font-size:14px}
+#aiNotes{white-space:pre-wrap;font-size:12px;color:#555;margin-top:6px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+.tool{background:#e4ebf2;color:#1b1b1b} .tool.on{background:var(--b);color:#fff}
+#edwrap{overflow:auto;background:#fff;border:1px solid #d4dbe3;border-radius:8px;max-height:72vh;touch-action:pan-x pan-y pinch-zoom}
+#edwrap svg{display:block;min-width:100%;height:auto}
+.legend{font-size:12px;color:#444;display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.legend i{display:inline-block;width:18px;height:10px;margin-right:4px;vertical-align:middle;border-radius:2px}
+table{border-collapse:collapse;width:100%;font-size:13px} th,td{border-bottom:1px solid #e3e7ec;padding:5px 6px;text-align:left;vertical-align:top}
+th{background:#f2f5f9;font-weight:600;white-space:nowrap} tr.first td{border-top:1.5px solid #c7d0da}
+.tw{overflow-x:auto;background:#fff;border-radius:8px;margin-bottom:10px}
+#lvlTable td input,#lvlTable td select{min-width:70px;padding:5px}
+.b{font-size:11px;padding:2px 7px;border-radius:10px;font-weight:700;color:#fff}
+.b.OK{background:var(--ok)} .b.CHECK{background:var(--ck)} .b.REVISE{background:var(--bad)}
+.sum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px} .sum div{background:#fff;padding:8px 12px;border-radius:8px;font-size:14px}
+.sum .ok{color:var(--ok);font-weight:700} .sum .ck{color:var(--ck);font-weight:700} .sum .bad{color:var(--bad);font-weight:700}
+.warn{background:#fff7e6;border:1px solid #f0c36d;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:13px}
+h3{font-size:15px;margin:16px 0 6px;color:var(--b)}
+.sheet{background:#fff;border-radius:8px;margin-bottom:14px;box-shadow:0 1px 3px #0002;overflow:hidden}
+.sheet .sh{padding:8px 12px;border-bottom:1px solid #e3e7ec;display:flex;gap:8px;align-items:center} .sheet .sh button{margin-left:auto;padding:4px 10px;font-size:12px}
+.sheet svg{display:block;width:100%;height:auto}
+.small{font-size:12px;color:#555}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw}
+#toast.show{opacity:.95} #toast.bad{background:var(--bad)}
+details summary{cursor:pointer;font-weight:600}
+table.calc{background:#fff;font-size:13px} table.calc td.ref{color:#666;width:90px;font-size:12px} table.calc td.out{width:230px;font-weight:600} table.calc th.ref{width:90px} table.calc th.out{width:230px}
+table.calc tr.ch td{background:#1f4e78;color:#fff;font-weight:700} table.calc tr.cs td{background:#eef3f8;font-weight:600}
+td.good{color:var(--ok)} td.bad{color:var(--bad)}
+@media(max-width:600px){main{padding:8px}.card{padding:11px}header h1{font-size:16px}}
+</style></head><body>
+<header><div><h1>StructDesign</h1><div class="sub">RC slabs · beams · columns from a floor plan — EC2 / BS 8110</div></div><span class="sp"></span>
+<button id="installBtn" hidden>Install app</button><button id="newBtn">New project</button></header>
+<nav><button class="tab" data-t="drawing">1 Drawing</button><button class="tab" data-t="layout">2 Layout</button><button class="tab" data-t="loads">3 Loads &amp; code</button><button class="tab" data-t="results">4 Design</button><button class="tab" data-t="calcs">5 Calcs</button><button class="tab" data-t="model">6 3D</button><button class="tab" data-t="drawings">7 Drawings</button></nav>
+<main>
+<section class="pane" id="p-drawing">
+  <div class="row">
+    <div class="card"><h2>Floor plan to design</h2><p>The plan of the floor <b>above</b> the slab — its walls become beams. Paste (Ctrl+V), drop, or choose an image or PDF.</p>
+      <div class="drop act" data-slot="plan">Tap here, then paste — or
+        <div class="btns"><button class="pasteBtn sec" data-slot="plan">Paste</button><label class="btn">Choose file<input class="pick" data-slot="plan" type="file" accept="image/*,.pdf,application/pdf"></label>
+        <label style="width:90px;margin:0">PDF page<input id="pg-plan" type="number" min="1" value="1"></label></div></div>
+      <div class="pv" id="pv-plan"></div><div class="st" id="st-plan"></div></div>
+    <div class="card"><h2>Floor below <small>(optional)</small></h2><p>Lets the app put columns only where there are walls below, so they don't land in rooms.</p>
+      <div class="drop" data-slot="below">Tap here, then paste — or
+        <div class="btns"><button class="pasteBtn sec" data-slot="below">Paste</button><label class="btn">Choose file<input class="pick" data-slot="below" type="file" accept="image/*,.pdf,application/pdf"></label>
+        <label style="width:90px;margin:0">PDF page<input id="pg-below" type="number" min="1" value="1"></label></div></div>
+      <div class="pv" id="pv-below"></div><div class="st" id="st-below"></div></div>
+  </div>
+  <div class="card"><h2>Read the drawings with AI</h2><p>Finds the walls, grid, stairs and balconies, then proposes columns and beams. You check and correct them on the next tab.</p>
+    <div id="aiSource" class="small"></div>
+    <div id="keyBox" class="grid2" style="margin-top:6px"><label>Anthropic API key<input id="apikey" type="password" placeholder="sk-ant-…" autocomplete="off"></label>
+      <label>Model<select id="model"><option value="claude-sonnet-5-5">Claude Sonnet 5.5 (recommended)</option><option value="claude-opus-5-5">Claude Opus 5.5 (most accurate)</option></select></label></div>
+    <button id="readBtn">Read drawings</button><div id="aiStatus"></div><div id="aiNotes"></div></div>
+  <div class="card"><h2>No drawing to hand?</h2>
+    <div class="toolbar"><button id="demoBtn" class="sec">Load demo project</button></div>
+    <div class="grid2"><label>Grid X positions (mm)<input id="blankX" value="0, 4000, 8000, 12000"></label><label>Grid Y positions (mm)<input id="blankY" value="0, 4500, 9000"></label></div>
+    <button id="blankBtn" class="sec">Start from a blank grid</button></div>
+</section>
+
+<section class="pane" id="p-layout" hidden>
+  <div class="card"><div class="toolbar">
+    <b style="margin-right:4px">Tap to edit:</b>
+    <button class="tool on" data-tool="col">■ Columns</button><button class="tool" data-tool="beam">━ Beams</button><button class="tool" data-tool="wall">▬ Wall on beam</button><button class="tool" data-tool="cell">▦ Slab / void / balcony</button>
+    <span style="flex:1"></span><button id="autoCols" class="sec">Re-propose columns</button><button id="zout" class="sec">−</button><button id="zin" class="sec">+</button></div>
+    <div id="edwrap"></div>
+    <div class="legend"><span><i style="background:#1f4e78"></i>beam carrying a wall</span><span><i style="background:#4a90d9"></i>beam, no wall</span><span><i style="background:#111"></i>column</span>
+      <span><i style="background:rgba(120,170,230,.35)"></i>slab</span><span><i style="background:rgba(140,120,230,.45)"></i>balcony (cantilever)</span><span><i style="background:#eee"></i>void / outside</span><span><i style="background:#e67e22"></i>walls on floor below</span></div>
+    <div class="toolbar" style="margin-top:8px"><label style="width:auto;margin:0"><input type="checkbox" id="showImg" checked style="width:auto"> drawing behind</label>
+      <label style="width:160px;margin:0">opacity<input type="range" id="op" min="0" max="1" step="0.05"></label>
+      <label style="width:auto;margin:0"><input type="checkbox" id="showBelow" checked style="width:auto"> walls below</label><span class="small" id="edInfo"></span></div></div>
+  <div class="card"><h2>Grid lines</h2><p>Edit positions (mm, from the top-left wall centreline). Columns, beams and slab types follow the nearest line.</p>
+    <div class="grid2"><label>X (left → right)<input id="gxIn"></label><label>Y (top → bottom)<input id="gyIn"></label></div><button id="applyGrid" class="sec">Apply grid</button></div>
+  <div class="card small">Check every column against doors and windows on <b>all</b> floors. Beams follow walls; a beam with no wall still carries slab load. Balcony cells supported on one side are designed as cantilevers.</div>
+</section>
+
+<section class="pane" id="p-loads" hidden>
+  <div class="card"><h2>Project</h2><div class="grid2" id="infoForm"></div></div>
+  <div class="card"><h2>Design code &amp; materials</h2><label style="max-width:320px">Code<select id="codeSel"><option value="EC2">Eurocode 2 (BS EN 1992-1-1)</option><option value="BS">BS 8110-1:1997</option></select></label><div class="grid2" id="matForm"></div></div>
+  <div class="card"><h2>Levels (bottom to top)</h2><p>Each suspended level uses the layout from tab 2. h = slab (mm); finishes, partitions and qk in kN/m²; external / internal wall loads on beams in kN/m (roof: parapet); storey height in m.</p>
+    <div class="tw"><table id="lvlTable"><tr><th>Name</th><th>Kind</th><th>h</th><th>Finishes</th><th>Partitions</th><th>qk</th><th>Ext. wall</th><th>Int. wall</th><th>Storey H</th><th></th></tr><tbody id="lvlBody"></tbody></table></div>
+    <button id="addLvl" class="sec">Add floor</button></div>
+</section>
+
+<section class="pane" id="p-results" hidden>
+  <div class="toolbar"><button id="csvBtn" class="sec">Download schedule (CSV)</button></div>
+  <div id="results"></div>
+</section>
+
+<section class="pane" id="p-calcs" hidden>
+  <div class="card"><div class="toolbar"><select id="calcSel" style="max-width:420px"></select><button id="calcPdfBtn">Calculations PDF (A4)</button><button id="xlsBtn" class="sec">Excel workbook (.xlsx)</button></div>
+    <p class="small">Step-by-step workings for every member: Ref. (code clause) · Calculation · Output. The Excel workbook repeats the section design with live formulas — change a blue input and the checks update.</p></div>
+  <div id="calcView" class="tw"></div>
+</section>
+
+<section class="pane" id="p-model" hidden>
+  <div class="card"><div class="toolbar">
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-slabs" checked style="width:auto"> slabs</label>
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-beams" checked style="width:auto"> beams</label>
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-cols" checked style="width:auto"> columns</label>
+    <label style="width:auto;margin:0"><input type="checkbox" id="m-rebar" style="width:auto"> reinforcement</label>
+    <span style="flex:1"></span><button class="sec" data-v="iso">3D</button><button class="sec" data-v="front">Front</button><button class="sec" data-v="side">Side</button><button class="sec" data-v="top">Plan</button><button id="pngBtn" class="sec">Save image</button></div>
+    <div id="view3d" style="width:100%;border-radius:8px;overflow:hidden;background:#f4f7fb"></div>
+    <p class="small">Drag to rotate · pinch or scroll to zoom · Shift+drag (or right-drag) to pan. Reinforcement view shows bottom bars (red), top bars (blue), links (grey) and column bars.</p></div>
+</section>
+
+<section class="pane" id="p-drawings" hidden>
+  <div class="card"><div class="toolbar"><button id="pdfBtn">Drawings PDF (A3)</button><button id="pkgBtn" class="sec">Full package PDF (drawings + calcs)</button><button id="saveBtn" class="sec">Save project</button>
+    <label class="btn sec">Open project<input id="openBtn" type="file" accept=".json,application/json"></label></div>
+    <p class="small">A3 sheets: framing &amp; slab reinforcement plans, building sections, beam reinforcement elevations with cross-sections, slab sections, 3D view, beam / slab / column schedules, typical details and notes.</p></div>
+  <div id="sheets"></div>
+</section>
+</main>
+<div id="toast"></div>
+<script>
+//ENGINE
+</script>
+</body></html>
