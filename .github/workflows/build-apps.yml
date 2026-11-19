@@ -1,0 +1,88 @@
+name: Build Android APK and Windows EXE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - name: Prepare web files
+        run: bash native/prepare-www.sh
+      - name: Create Capacitor Android project
+        run: |
+          npm init -y >/dev/null
+          npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6 @capacitor/filesystem@6 @capacitor/share@6
+          npx cap init StructDesign com.urbanforge.structdesign --web-dir www
+          npx cap add android
+      - name: App icon
+        run: |
+          R=android/app/src/main/res
+          rm -rf $R/mipmap-anydpi-v26
+          for d in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            n=${d%%:*}; s=${d##*:}
+            for f in ic_launcher ic_launcher_round ic_launcher_foreground; do
+              convert icon-512.png -resize ${s}x${s} $R/mipmap-$n/$f.png
+            done
+          done
+      - name: Build APK
+        run: |
+          npx cap sync android
+          cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../StructDesign.apk
+      - uses: actions/upload-artifact@v4
+        with: { name: StructDesign-android, path: StructDesign.apk }
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run: { shell: bash }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Prepare web files
+        run: |
+          bash native/prepare-www.sh
+          mv www native/electron/www
+          mkdir -p native/electron/build && cp icon-512.png native/electron/build/icon.png
+      - name: Build EXE
+        working-directory: native/electron
+        run: |
+          npm install
+          npm run dist
+          ls dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StructDesign-windows
+          path: |
+            native/electron/dist/StructDesign-Setup.exe
+            native/electron/dist/StructDesign-Portable.exe
+
+  release:
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: out, merge-multiple: true }
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v2.0.${{ github.run_number }}
+          name: StructDesign v2.0.${{ github.run_number }}
+          body: |
+            **Android:** download `StructDesign.apk` on your phone and open it (allow "Install unknown apps" for Chrome/Files when asked).
+            **Windows 10/11:** `StructDesign-Setup.exe` installs with Start-menu and desktop shortcuts; `StructDesign-Portable.exe` runs without installing. If SmartScreen warns, click *More info → Run anyway*.
+          files: |
+            out/StructDesign.apk
+            out/StructDesign-Setup.exe
+            out/StructDesign-Portable.exe

@@ -1,0 +1,19 @@
+{
+  "name": "structdesign",
+  "productName": "StructDesign",
+  "version": "2.0.0",
+  "description": "RC structural design (EC2 / BS 8110) - Urban Forge Construction Limited",
+  "author": "Urban Forge Construction Limited",
+  "main": "main.js",
+  "scripts": { "dist": "electron-builder --win nsis portable --x64 --publish never" },
+  "devDependencies": { "electron": "^31.7.7", "electron-builder": "^24.13.3" },
+  "build": {
+    "appId": "com.urbanforge.structdesign",
+    "productName": "StructDesign",
+    "files": ["main.js", "www/**/*"],
+    "directories": { "output": "dist", "buildResources": "build" },
+    "win": { "icon": "build/icon.png" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "createDesktopShortcut": true, "createStartMenuShortcut": true, "shortcutName": "StructDesign", "artifactName": "StructDesign-Setup.exe" },
+    "portable": { "artifactName": "StructDesign-Portable.exe" }
+  }
+}

@@ -53,3 +53,13 @@ After editing, run `python src/build.py` to regenerate `index.html`, then commit
 ## Limitations
 
 Scheme-level design by hand methods: coefficient moments for slabs, tributary slab loads to beams, sub-frame moments for columns, square columns. Foundations and stairs are not designed (column loads to foundations are given). AI reading of drawings must be checked on the Layout tab. **All output must be checked and signed by a registered engineer before construction.**
+
+## Phone and Windows apps
+
+Every push to `main` builds the apps with GitHub Actions (`.github/workflows/build-apps.yml`) and publishes them on the **Releases** page:
+
+- `StructDesign.apk` – Android (Capacitor wrapper, works offline; exported PDFs/Excel open the share sheet so you can save to Files/Drive or send on WhatsApp/email)
+- `StructDesign-Setup.exe` – Windows 10/11 installer (Electron)
+- `StructDesign-Portable.exe` – Windows, runs without installing
+
+The AI drawing reader needs internet and your Anthropic API key (stored only on the device); all design, drawings, calc sheets, Excel and 3D work offline.

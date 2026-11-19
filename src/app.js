@@ -41,6 +41,18 @@
     else { el.innerHTML = `Uses your Anthropic API key (stored only on this device).`; $("#keyBox").hidden = false; }
   }
   async function saveFile(name, data, mime) {
+    // Android app (Capacitor): write to cache, then open the share sheet (Save to Files / Drive / WhatsApp…)
+    const Cap = window.Capacitor;
+    if (Cap && Cap.isNativePlatform && Cap.isNativePlatform() && Cap.Plugins && Cap.Plugins.Filesystem) {
+      try {
+        const blob = data instanceof Blob ? data : new Blob([data], { type: mime || "application/octet-stream" });
+        const b64 = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(String(fr.result).split(",")[1]); fr.readAsDataURL(blob); });
+        const w = await Cap.Plugins.Filesystem.writeFile({ path: name, data: b64, directory: "CACHE" });
+        if (Cap.Plugins.Share) await Cap.Plugins.Share.share({ title: name, url: w.uri, dialogTitle: "Save or send " + name });
+        else toast("Saved to app storage: " + name);
+      } catch (e) { if (!/cancel/i.test(String(e && (e.message || e)))) toast("Could not save: " + (e.message || e), true); }
+      return;
+    }
     if (downloads) {
       try { await downloads.save({ filename: name, data }); toast("Saved " + name); return; }
       catch (e) { if (e && e.code === "declined") return; toast("Download not available here: " + (e.code || e), true); return; }
@@ -504,7 +516,7 @@ Rules:
   $("#aiNotes").textContent = P.aiNotes || "";
   let t0 = "drawing"; try { t0 = localStorage.getItem("sd_tab") || "drawing"; } catch (e) {}
   showTab(t0);
-  if (!window.claude && "serviceWorker" in navigator && location.protocol === "https:") {
+  if (!window.claude && !window.Capacitor && "serviceWorker" in navigator && location.protocol === "https:" && location.hostname !== "localhost") {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   }
   window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); const b = $("#installBtn"); b.hidden = false; b.onclick = () => { e.prompt(); b.hidden = true; }; });
